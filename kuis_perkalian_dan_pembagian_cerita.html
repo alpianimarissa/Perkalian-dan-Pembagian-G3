@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Petualangan Perkalian & Pembagian Kelas 3 SD</title>
+    <!-- Tailwind CSS untuk tata letak dan gaya responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts untuk tipografi ramah anak -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+        .kids-font {
+            font-family: 'Fredoka', sans-serif;
+        }
+        @keyframes wave {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-5px) scale(1.02); }
+        }
+        .bouncy-card {
+            animation: wave 6s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-amber-50 via-teal-50 to-emerald-100 min-h-screen flex flex-col justify-between overflow-x-hidden select-none">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="bg-white/90 backdrop-blur-md border-b-4 border-emerald-200 py-3 px-6 flex justify-between items-center sticky top-0 z-40 shadow-md">
+        <div class="flex items-center gap-3">
+            <span class="text-3xl animate-bounce">⚡</span>
+            <div>
+                <h1 class="kids-font text-xl md:text-2xl font-black text-emerald-600">Kuis Super Matematika</h1>
+                <p class="text-xs text-teal-600 font-extrabold tracking-wider">KURIKULUM MERDEKA • 30 MISI PERKALIAN & PEMBAGIAN</p>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3">
+            <!-- Points Badge -->
+            <div class="bg-amber-100 border-2 border-amber-400 rounded-full px-4 py-1.5 flex items-center gap-1.5 shadow-sm">
+                <span class="text-lg">⭐</span>
+                <span id="header-score" class="font-black text-amber-800 text-sm md:text-base">0 Poin</span>
+            </div>
+            
+            <!-- Scratchpad Toggle Button -->
+            <button onclick="toggleScratchpad()" class="bg-teal-100 hover:bg-teal-200 border-2 border-teal-400 active:scale-95 transition text-teal-700 font-black rounded-full px-4 py-1.5 flex items-center gap-1 text-sm shadow-sm">
+                ✏️ <span class="hidden md:inline">Papan Cakar</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- SCRATCHPAD DRAWING OVERLAY -->
+    <div id="scratchpad" class="hidden fixed inset-0 z-50 bg-white/95 flex flex-col p-4 animate-fade-in">
+        <div class="flex justify-between items-center mb-2 border-b-2 border-gray-100 pb-2">
+            <h3 class="kids-font text-lg font-bold text-teal-600 flex items-center gap-2">
+                ✏️ Papan Coret Hitung Cakar Bebas
+            </h3>
+            <div class="flex items-center gap-2">
+                <button onclick="clearCanvas()" class="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-3 py-1.5 rounded-lg text-sm">Hapus Coretan</button>
+                <button onclick="toggleScratchpad()" class="bg-teal-500 hover:bg-teal-600 text-white font-bold px-4 py-1.5 rounded-lg text-sm">Kembali Ke Soal</button>
+            </div>
+        </div>
+        <div class="flex-1 bg-amber-50/50 border-4 border-dashed border-teal-300 rounded-2xl relative cursor-crosshair overflow-hidden">
+            <canvas id="scratch-canvas" class="absolute inset-0 w-full h-full"></canvas>
+        </div>
+        <p class="text-xs text-gray-500 mt-2 text-center">Gunakan jarimu (layar sentuh) atau mouse komputer untuk mencakar perkalian/pembagian di sini!</p>
+    </div>
+
+    <!-- MAIN INTERACTIVE QUIZ AREA -->
+    <main class="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+        
+        <!-- DASHBOARD / START SCREEN -->
+        <div id="dashboard-screen" class="w-full max-w-4xl bg-white rounded-3xl border-8 border-emerald-200 shadow-xl p-6 md:p-10 text-center relative overflow-hidden">
+            <div class="absolute -top-10 -left-10 w-40 h-40 bg-teal-100 rounded-full opacity-50"></div>
+            <div class="absolute -bottom-10 -right-10 w-40 h-40 bg-amber-100 rounded-full opacity-50"></div>
+            
+            <span class="text-7xl block mb-4 animate-bounce">⚔️</span>
+            <h2 class="kids-font text-3xl md:text-5xl font-extrabold text-slate-800 mb-2">Petualangan Kali & Bagi</h2>
+            <p class="text-base md:text-lg text-emerald-600 font-bold mb-8">Uji Kemampuan Hitung Cepat & Detektif Cerita Kelas 3 SD</p>
+            
+            <div class="grid md:grid-cols-2 gap-6 mb-8 text-left">
+                <!-- Info Card 1 -->
+                <div class="bg-amber-50 border-4 border-amber-200 rounded-2xl p-5 hover:scale-102 transition duration-300">
+                    <span class="text-3xl block mb-2">⚡</span>
+                    <h3 class="kids-font text-lg font-black text-amber-700">10 Soal Hitung Kilat</h3>
+                    <p class="text-xs text-amber-600 font-bold mt-1">Menguji hafalan dan kelincahan menghitung perkalian & pembagian dasar secara langsung.</p>
+                </div>
+                <!-- Info Card 2 -->
+                <div class="bg-emerald-50 border-4 border-emerald-200 rounded-2xl p-5 hover:scale-102 transition duration-300">
+                    <span class="text-3xl block mb-2">🕵️‍♂️</span>
+                    <h3 class="kids-font text-lg font-black text-emerald-700">20 Cerita Detektif</h3>
+                    <p class="text-xs text-emerald-600 font-bold mt-1">Memecahkan masalah sehari-hari menggunakan logika perkalian dan pembagian adil.</p>
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-600 hover:to-teal-500 text-white font-black text-lg md:text-xl py-4 px-10 rounded-full shadow-lg hover:shadow-xl active:scale-95 transition transform duration-300">
+                🚀 MULAI PETUALANGAN!
+            </button>
+        </div>
+
+        <!-- PLAYING SCREEN -->
+        <div id="quiz-screen" class="hidden w-full max-w-3xl bg-white rounded-3xl border-8 border-teal-200 shadow-xl overflow-hidden flex flex-col justify-between min-h-[460px] md:min-h-[500px]">
+            <!-- Top Progress Info -->
+            <div class="bg-teal-50 px-6 py-4 flex justify-between items-center border-b-2 border-teal-100">
+                <span id="quiz-badge" class="bg-teal-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider">Soal Perhitungan</span>
+                <span id="quiz-timer" class="font-black text-slate-700 text-sm flex items-center gap-1">⏰ Soal: <span id="q-counter">1/30</span></span>
+            </div>
+
+            <!-- Main Question Space -->
+            <div class="p-6 md:p-10 flex-1 flex flex-col justify-center">
+                <div id="question-text" class="text-xl md:text-2xl font-bold text-slate-800 text-center leading-relaxed">
+                    <!-- Dimuat secara dinamis -->
+                </div>
+                
+                <!-- Graphic Supplement Box -->
+                <div id="question-graphic" class="hidden my-4 text-center text-4xl p-3 bg-amber-50 border-2 border-dashed border-amber-200 rounded-xl max-w-sm mx-auto">
+                    <!-- Dimuat secara dinamis -->
+                </div>
+            </div>
+
+            <!-- Multiple Choice Options -->
+            <div class="px-6 md:px-10 pb-8 grid md:grid-cols-2 gap-3" id="options-container">
+                <!-- Tombol dimuat secara dinamis -->
+            </div>
+
+            <!-- Bottom Progress Line -->
+            <div class="w-full bg-slate-100 h-3">
+                <div id="quiz-progress" class="bg-gradient-to-r from-teal-400 to-emerald-400 h-full transition-all duration-300" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- REPORT / END SCREEN -->
+        <div id="result-screen" class="hidden w-full max-w-4xl bg-white rounded-3xl border-8 border-emerald-200 shadow-xl p-6 md:p-10 text-center">
+            <span id="result-emoji" class="text-7xl block mb-3 animate-bounce">🎉</span>
+            <h2 class="kids-font text-3xl md:text-4xl font-extrabold text-slate-800 mb-1" id="result-title">Hebat Sekali!</h2>
+            <p class="text-sm text-gray-500 font-bold mb-6" id="result-rank">Gelar: Master Angka Cilik</p>
+
+            <!-- Score Cards -->
+            <div class="grid grid-cols-3 gap-3 mb-8 max-w-lg mx-auto">
+                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-3 text-center">
+                    <span class="text-xs text-emerald-800 font-bold block">BENAR</span>
+                    <span id="score-correct" class="text-2xl font-black text-emerald-600">0</span>
+                </div>
+                <div class="bg-red-50 border-2 border-red-200 rounded-2xl p-3 text-center">
+                    <span class="text-xs text-red-800 font-bold block">SALAH</span>
+                    <span id="score-wrong" class="text-2xl font-black text-red-500">0</span>
+                </div>
+                <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-3 text-center">
+                    <span class="text-xs text-amber-800 font-bold block">TOTAL POIN</span>
+                    <span id="score-total" class="text-2xl font-black text-amber-600">0</span>
+                </div>
+            </div>
+
+            <!-- Slide-down Review Section Toggle -->
+            <div class="mb-8">
+                <button onclick="toggleReviewList()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 border-2 border-slate-300 font-black rounded-xl px-5 py-2 text-sm transition">
+                    🔍 Lihat Detail Pembahasan Kuis
+                </button>
+                
+                <div id="review-container" class="hidden mt-4 max-h-60 overflow-y-auto text-left space-y-2 border-t-2 border-gray-100 pt-3">
+                    <!-- Dynamic review list goes here -->
+                </div>
+            </div>
+
+            <!-- Reset Actions -->
+            <div class="flex justify-center gap-4">
+                <button onclick="resetQuiz()" class="bg-gradient-to-r from-teal-400 to-teal-500 hover:from-teal-500 hover:to-teal-600 text-white font-black px-8 py-3 rounded-full shadow-md active:scale-95 transition">
+                    🔄 Ulangi Kuis
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING TOAST NOTIFICATION -->
+    <div id="toast" class="hidden fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 text-white font-black px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce">
+        <span id="toast-icon">✨</span> <span id="toast-text">Jawaban Benar! Luar Biasa!</span>
+    </div>
+
+    <!-- CANVAS FOR CONFETTI SELEBRASI -->
+    <canvas id="confetti" class="fixed inset-0 pointer-events-none z-50 w-full h-full hidden"></canvas>
+
+    <!-- INLINE JAVASCRIPT LOGIC -->
+    <script>
+        // --- SOUND EFFECTS (Web Audio API Synthesizer) ---
+        let audioCtx;
+        function getAudioContext() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function playSound(type) {
+            try {
+                const ctx = getAudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+
+                if (type === 'correct') {
+                    // Ceria / Nada tinggi beruntun naik
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+                    osc.frequency.setValueAtTime(1046.50, ctx.currentTime + 0.3); // C6
+                    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.5);
+                } else if (type === 'incorrect') {
+                    // Sedih / Nada rendah menurun
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(160, ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.35);
+                } else if (type === 'victory') {
+                    // Nada trumpet megah akord C Mayor
+                    const now = ctx.currentTime;
+                    const frequencies = [261.63, 329.63, 392.00, 523.25];
+                    frequencies.forEach(f => {
+                        const o = ctx.createOscillator();
+                        const g = ctx.createGain();
+                        o.type = 'triangle';
+                        o.frequency.setValueAtTime(f, now);
+                        g.gain.setValueAtTime(0.08, now);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + 1.2);
+                        o.connect(g);
+                        g.connect(ctx.destination);
+                        o.start(now);
+                        o.stop(now + 1.2);
+                    });
+                }
+            } catch (e) {
+                console.log("Audio Context diblokir atau tidak didukung pada browser ini.");
+            }
+        }
+
+        // --- 30 QUIZ QUESTIONS DEFINITION (10 Direct, 20 Story) ---
+        const questions = [
+            // DIRECT QUESTIONS (1-10) - BERHITUNG KILAT
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "✖️",
+                text: "Berapakah hasil perkalian dasar:<br><strong class='text-3xl text-emerald-600'>7 × 8</strong>?",
+                options: ["48", "54", "56", "64"],
+                answer: "56",
+                explanation: "Hafalan perkalian 7 dan 8: 7 dikali 8 sama dengan 56."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "➗",
+                text: "Berapakah hasil pembagian berikut:<br><strong class='text-3xl text-teal-600'>54 ÷ 6</strong>?",
+                options: ["7", "8", "9", "12"],
+                answer: "9",
+                explanation: "Pembagian adalah kebalikan perkalian. Karena 6 × 9 = 54, maka 54 ÷ 6 = 9."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "✖️",
+                text: "Hitunglah perkalian puluhan dengan satuan:<br><strong class='text-3xl text-emerald-600'>12 × 4</strong>?",
+                options: ["36", "44", "48", "52"],
+                answer: "48",
+                explanation: "Bisa dihitung bersusun atau ditambah berulang: 12 + 12 + 12 + 12 = 48."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "➗",
+                text: "Berapakah hasil pembagian bersisa nol:<br><strong class='text-3xl text-teal-600'>80 ÷ 5</strong>?",
+                options: ["14", "15", "16", "18"],
+                answer: "16",
+                explanation: "Gunakan pembagian bersusun (porogapit). 80 dibagi 5 menghasilkan tepat 16."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "✖️",
+                text: "Berapakah hasil perkalian angka kembar:<br><strong class='text-3xl text-emerald-600'>9 × 9</strong>?",
+                options: ["72", "81", "90", "99"],
+                answer: "81",
+                explanation: "Perkalian angka kembar sembilan: sembilan kali sembilan adalah 81."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "➗",
+                text: "Gunakan trik membagi dengan angka ratusan:<br><strong class='text-3xl text-teal-600'>150 ÷ 3</strong>?",
+                options: ["30", "40", "50", "60"],
+                answer: "50",
+                explanation: "Trik cepat: Simpan angka nol terlebih dahulu, bagi 15 ÷ 3 = 5. Masukkan kembali angka nol menjadi 50."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "✖️",
+                text: "Hitunglah perkalian bersusun:<br><strong class='text-3xl text-emerald-600'>14 × 3</strong>?",
+                options: ["32", "42", "48", "52"],
+                answer: "42",
+                explanation: "Kalikan satuannya dulu: 4 × 3 = 12 (tulis 2 simpan 1). Kalikan puluhannya: 1 × 3 = 3. Tambahkan simpanan: 3 + 1 = 4. Hasilnya 42."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "➗",
+                text: "Selesaikan operasi pembagian berikut:<br><strong class='text-3xl text-teal-600'>72 ÷ 8</strong>?",
+                options: ["7", "8", "9", "10"],
+                answer: "9",
+                explanation: "Ingat kembali pasangan perkalian: 8 × 9 = 72. Jadi, 72 ÷ 8 = 9."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "✖️",
+                text: "Tantangan perkalian istimewa:<br><strong class='text-3xl text-emerald-600'>25 × 4</strong>?",
+                options: ["75", "100", "125", "150"],
+                answer: "100",
+                explanation: "Trik koin: Bayangkan 4 keping uang 25-an. 25 + 25 + 25 + 25 = 100."
+            },
+            {
+                type: "direct",
+                category: "Berhitung Kilat",
+                graphic: "➗",
+                text: "Berapakah hasil pembagian:<br><strong class='text-3xl text-teal-600'>108 ÷ 9</strong>?",
+                options: ["11", "12", "13", "14"],
+                answer: "12",
+                explanation: "108 ÷ 9 = 12. Karena 9 × 10 = 90, sisa 18 adalah hasil dari 9 × 2. Jadi 10 + 2 = 12."
+            },
+            
+            // STORY QUESTIONS (11-30) - DETEKTIF CERITA
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🍫",
+                text: "Doni membawa <strong>24 cokelat lezat</strong>. Ia ingin membagikannya secara adil kepada <strong>4 orang temannya</strong>. Berapa cokelat yang diterima setiap anak?",
+                options: ["5", "6", "7", "8"],
+                answer: "6",
+                explanation: "Kata kunci 'membagikan secara adil' adalah pembagian: 24 cokelat ÷ 4 teman = 6 cokelat per anak."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "✏️",
+                text: "Lani memiliki <strong>5 kotak pensil baru</strong>. Setiap kotak berisi berisi <strong>8 pensil warna</strong>. Berapa jumlah seluruh pensil milik Lani?",
+                options: ["35", "40", "45", "50"],
+                answer: "40",
+                explanation: "Kata kunci 'setiap kotak berisi' menunjukkan perkalian: 5 kotak × 8 pensil = 40 pensil."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🐠",
+                text: "Paman membeli <strong>36 ikan mas koki</strong>. Ikan-ikan tersebut dimasukkan ke dalam <strong>6 akuarium kecil</strong> sama rata. Berapa banyak ikan di setiap akuarium?",
+                options: ["5", "6", "7", "8"],
+                answer: "6",
+                explanation: "Ikan dibagi rata ke dalam wadah: 36 ikan ÷ 6 akuarium = 6 ikan di tiap akuarium."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🪑",
+                text: "Di ruang kelas terdapat <strong>7 baris meja</strong>. Jika di setiap baris terdapat <strong>6 kursi</strong>, berapa total kursi yang ada di dalam kelas?",
+                options: ["36", "42", "48", "54"],
+                answer: "42",
+                explanation: "Gunakan perkalian baris dikali kolom: 7 baris × 6 kursi = 42 kursi."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🍩",
+                text: "Siti membeli <strong>3 kotak donat</strong> yang manis. Di setiap kotak terdapat <strong>12 donat</strong> beraneka rasa. Berapa jumlah seluruh donat yang dibeli Siti?",
+                options: ["30", "34", "36", "48"],
+                answer: "36",
+                explanation: "Kalikan jumlah wadah dengan isinya: 3 kotak × 12 donat = 36 donat keseluruhan."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🎒",
+                text: "Sebanyak <strong>48 siswa kelas 3</strong> akan dibagi ke dalam <strong>4 kelompok belajar</strong> dengan jumlah anggota sama banyak. Berapa siswa di setiap kelompok?",
+                options: ["10", "11", "12", "14"],
+                answer: "12",
+                explanation: "Membagi jumlah siswa ke kelompok: 48 siswa ÷ 4 kelompok = 12 siswa per kelompok."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🥚",
+                text: "Pak Tani mengumpulkan telur dari kandang bebek. Ada <strong>8 sarang bebek</strong> yang masing-masing berisi <strong>9 butir telur</strong>. Berapa jumlah telur bebek seluruhnya?",
+                options: ["64", "72", "80", "81"],
+                answer: "72",
+                explanation: "Kombinasikan sarang dan isinya dengan perkalian: 8 sarang × 9 butir = 72 butir telur."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🔮",
+                text: "Kiki memiliki <strong>90 kelereng</strong>. Ia memasukkan kelereng tersebut ke dalam beberapa kantong plastik. Setiap kantong berisi <strong>9 kelereng</strong>. Berapa kantong plastik yang dibutuhkan Kiki?",
+                options: ["8", "9", "10", "12"],
+                answer: "10",
+                explanation: "Bagilah total kelereng dengan kapasitas kantong: 90 kelereng ÷ 9 kelereng/kantong = 10 kantong plastik."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "📚",
+                text: "Perpustakaan sekolah menyusun buku di <strong>6 rak buku baru</strong>. Jika masing-masing rak diisi penuh dengan <strong>15 buku cerita</strong>, berapa total buku cerita yang tertata?",
+                options: ["80", "85", "90", "95"],
+                answer: "90",
+                explanation: "Kalikan jumlah rak dengan kapasitas buku: 6 rak × 15 buku = 90 buku."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "📖",
+                text: "Sebuah buku dongeng tebal memiliki <strong>100 halaman</strong>. Jika Budi membaca konsisten sebanyak <strong>10 halaman setiap hari</strong>, dalam berapa hari Budi akan menyelesaikan membaca seluruh buku?",
+                options: ["8 hari", "9 hari", "10 hari", "12 hari"],
+                answer: "10 hari",
+                explanation: "Waktu selesai = total halaman dibagi halaman harian: 100 ÷ 10 = 10 hari."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🚗",
+                text: "Toko mainan menerima kiriman <strong>4 kotak besar mobil-mobilan</strong>. Di dalam setiap kotak terdapat <strong>25 unit mainan mobil</strong>. Berapa jumlah mainan mobil semuanya?",
+                options: ["80", "90", "100", "110"],
+                answer: "100",
+                explanation: "Perkalian istimewa: 4 kotak × 25 mainan = 100 unit mainan mobil-mobilan."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🎈",
+                text: "Sebanyak <strong>75 balon hias warna-warni</strong> akan diikat menjadi beberapa kelompok. Setiap kelompok terdiri dari <strong>5 balon</strong>. Berapa banyak ikat balon yang terbentuk?",
+                options: ["13", "14", "15", "16"],
+                answer: "15",
+                explanation: "Gunakan pembagian bersusun: 75 balon ÷ 5 balon per ikat = 15 ikat balon."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🏃",
+                text: "Soni rajin berlari pagi <strong>3 kilometer setiap hari</strong>. Berapa kilometer jarak total yang ditempuh Soni dalam waktu <strong>1 minggu (7 hari)</strong>?",
+                options: ["14 km", "18 km", "21 km", "24 km"],
+                answer: "21 km",
+                explanation: "Kalikan jarak harian dengan jumlah hari: 3 km × 7 hari = 21 kilometer."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🍕",
+                text: "Sebuah restoran pizza memotong <strong>64 slice pizza besar</strong> untuk dibagikan secara merata ke <strong>8 meja pengunjung</strong>. Berapa slice pizza yang didapat tiap meja?",
+                options: ["6 slice", "7 slice", "8 slice", "9 slice"],
+                answer: "8 slice",
+                explanation: "Pembagian adil: 64 slice ÷ 8 meja = 8 slice pizza per meja."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "📦",
+                text: "Ibu memesan <strong>11 kotak pizza mini</strong> untuk pesta ulang tahun Adik. Jika setiap kotak berisi <strong>6 potong pizza</strong>, berapa total potongan pizza yang dipesan Ibu?",
+                options: ["56 potong", "60 potong", "66 potong", "72 potong"],
+                answer: "66 potong",
+                explanation: "Perkalian angka kembar sebelas: 11 kotak × 6 potong = 66 potong pizza."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🌱",
+                text: "Di halaman sekolah, akan ditanam <strong>80 bibit pohon mahoni</strong>. Guru membagi bibit tersebut ke dalam <strong>10 baris rapi</strong>. Berapa banyak bibit pohon di setiap baris?",
+                options: ["7 bibit", "8 bibit", "9 bibit", "10 bibit"],
+                answer: "8 bibit",
+                explanation: "Trik coret nol pembagian kelipatan sepuluh: 80 ÷ 10 = 8 bibit di tiap baris."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🦸",
+                text: "Toko buku memiliki <strong>9 paket komik superhero</strong>. Setiap paket komik berisi lengkap sebanyak <strong>12 seri komik berbeda</strong>. Berapa jumlah seluruh komik di toko tersebut?",
+                options: ["98", "102", "106", "108"],
+                answer: "108",
+                explanation: "Menghitung total buku: 9 paket × 12 komik = 108 komik."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🍅",
+                text: "Seorang petani memanen <strong>120 buah tomat ceri</strong>. Ia ingin membaginya ke dalam <strong>6 keranjang anyaman</strong> secara merata. Berapa tomat di setiap keranjang?",
+                options: ["15 buah", "20 buah", "25 buah", "30 buah"],
+                answer: "20 buah",
+                explanation: "Gunakan trik simpan nol: 12 ÷ 6 = 2. Kembalikan nolnya sehingga menjadi 20 buah tomat."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🕷️",
+                text: "Seekor laba-laba memiliki <strong>8 kaki</strong>. Jika kamu melihat ada <strong>7 ekor laba-laba</strong> merayap di dinding, berapa jumlah total kaki laba-laba tersebut?",
+                options: ["48 kaki", "54 kaki", "56 kaki", "64 kaki"],
+                answer: "56 kaki",
+                explanation: "Kalikan jumlah kaki seekor laba-laba dengan jumlah laba-laba: 8 kaki × 7 laba-laba = 56 kaki."
+            },
+            {
+                type: "story",
+                category: "Detektif Cerita",
+                graphic: "🍬",
+                text: "Sebuah toples besar berisi <strong>96 permen jeli</strong>. Permen tersebut akan dibagikan kepada <strong>8 anak</strong> sama rata. Berapa butir permen jeli yang diterima setiap anak?",
+                options: ["10 butir", "11 butir", "12 butir", "14 butir"],
+                answer: "12 butir",
+                explanation: "Gunakan pembagian bersusun: 96 ÷ 8. Sembilan dibagi delapan dapat 1 sisa 1. Angka enam turun jadi 16, lalu 16 ÷ 8 = 2. Hasilnya 12 butir permen."
+            }
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let correctAnswersCount = 0;
+        let wrongAnswersCount = 0;
+        let userResponses = []; // Melacak respon pilihan pengguna untuk review akhir kuis
+        let attemptsOnCurrentQuestion = 0; // Menyimpan jumlah percobaan untuk soal aktif
+
+        // Canvas Sketchpad variables
+        let isDrawing = false;
+
+        // Confetti Engine variables
+        let confettiActive = false;
+        let particles = [];
+
+        // --- DASHBOARD START CONTROL ---
+        function startQuiz() {
+            playSound('correct'); // Menghidupkan AudioContext interaksi pertama
+            document.getElementById('dashboard-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            
+            // Atur ulang variabel permainan
+            currentQuestionIndex = 0;
+            score = 0;
+            correctAnswersCount = 0;
+            wrongAnswersCount = 0;
+            userResponses = [];
+            attemptsOnCurrentQuestion = 0;
+            
+            updateHeaderScore();
+            loadQuestion(currentQuestionIndex);
+        }
+
+        // --- LOAD QUESTION CONTENT ---
+        function loadQuestion(index) {
+            attemptsOnCurrentQuestion = 0; // Reset jumlah percobaan di setiap soal baru
+            const q = questions[index];
+            
+            // Set Progress Bar
+            const progressPercent = (index / questions.length) * 100;
+            document.getElementById('quiz-progress').style.width = `${progressPercent}%`;
+
+            // Counter Update
+            document.getElementById('q-counter').innerText = `${index + 1} / ${questions.length}`;
+
+            // Category Badge Style
+            const badge = document.getElementById('quiz-badge');
+            badge.innerText = q.category;
+            if (q.type === 'direct') {
+                badge.className = "bg-amber-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider";
+            } else {
+                badge.className = "bg-emerald-500 text-white font-black text-xs px-3 py-1 rounded-full uppercase tracking-wider";
+            }
+
+            // Load Texts
+            document.getElementById('question-text').innerHTML = q.text;
+            
+            // Render Graphic Box
+            const graphicBox = document.getElementById('question-graphic');
+            if (q.graphic) {
+                graphicBox.innerText = q.graphic;
+                graphicBox.classList.remove('hidden');
+            } else {
+                graphicBox.classList.add('hidden');
+            }
+
+            // Render Option Buttons (Vibrant Pastel Colors)
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            const btnColors = [
+                'bg-sky-100 hover:bg-sky-200 text-sky-800 border-sky-400',
+                'bg-pink-100 hover:bg-pink-200 text-pink-800 border-pink-400',
+                'bg-amber-100 hover:bg-amber-200 text-amber-800 border-amber-400',
+                'bg-emerald-100 hover:bg-emerald-200 text-emerald-800 border-emerald-400'
+            ];
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `border-b-4 p-4 rounded-2xl font-black text-base md:text-lg active:scale-95 transition flex justify-between items-center ${btnColors[idx % btnColors.length]}`;
+                btn.innerHTML = `<span>${opt}</span><span class="opacity-30 text-xs">👉 PILIH</span>`;
+                btn.onclick = () => handleAnswerSelect(btn, opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // --- ANSWER SELECTION AND INSTANT FEEDBACK (RETRY UNTIL CORRECT) ---
+        function handleAnswerSelect(clickedButton, selectedOption) {
+            attemptsOnCurrentQuestion++;
+            const q = questions[currentQuestionIndex];
+            const isCorrect = selectedOption === q.answer;
+
+            if (isCorrect) {
+                // Jika benar, kunci semua tombol pilihan untuk proses transisi
+                const optionsContainer = document.getElementById('options-container');
+                Array.from(optionsContainer.children).forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-50');
+                });
+
+                playSound('correct');
+                clickedButton.classList.remove('opacity-50');
+                clickedButton.className = "border-b-4 border-emerald-500 bg-emerald-100 text-emerald-800 p-4 rounded-2xl font-black text-base md:text-lg flex justify-between items-center";
+                clickedButton.innerHTML = `<span>${selectedOption}</span> <span>🎉 BENAR!</span>`;
+                
+                // Hitung skor berdasarkan percobaan ke berapa anak menjawab benar
+                if (attemptsOnCurrentQuestion === 1) {
+                    score += 10;
+                    correctAnswersCount++;
+                    showToast("✨ Luar Biasa! Langsung benar pada percobaan pertama!", "bg-emerald-500");
+                } else {
+                    score += 5; // Tetap beri setengah poin untuk kegigihan anak mencoba lagi
+                    wrongAnswersCount++; // Catat bahwa ada kesalahan pada percobaan awal
+                    showToast("🌟 Hebat! Kamu pantang menyerah dan berhasil menjawab benar!", "bg-teal-500");
+                }
+                
+                updateHeaderScore();
+                triggerConfetti();
+
+                // Simpan respon pengguna untuk hasil review akhir
+                userResponses.push({
+                    question: q.text,
+                    category: q.category,
+                    userAnswer: selectedOption,
+                    correctAnswer: q.answer,
+                    explanation: q.explanation,
+                    status: attemptsOnCurrentQuestion === 1
+                });
+
+                // Pindah ke soal berikutnya setelah jeda singkat agar selebrasi terlihat
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < questions.length) {
+                        loadQuestion(currentQuestionIndex);
+                    } else {
+                        finishQuiz();
+                    }
+                }, 1500);
+
+            } else {
+                playSound('incorrect');
+                // Jangan pindah soal! Cukup kunci tombol salah yang baru saja ditekan agar anak mencoba pilihan lain
+                clickedButton.disabled = true;
+                clickedButton.className = "border-b-4 border-red-300 bg-red-100 text-red-500 p-4 rounded-2xl font-black text-base md:text-lg flex justify-between items-center opacity-60 cursor-not-allowed";
+                clickedButton.innerHTML = `<span>${selectedOption}</span> <span>❌ Coba Lagi!</span>`;
+                
+                showToast("💡 Belum Tepat! Ayo gunakan papan cakar untuk coret-coret menghitung kembali!", "bg-pink-400");
+            }
+        }
+
+        function updateHeaderScore() {
+            document.getElementById('header-score').innerText = `${score} Poin`;
+        }
+
+        function showToast(text, bgClass) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toast.className = `fixed bottom-10 left-1/2 transform -translate-x-1/2 z-50 text-white font-black px-6 py-3.5 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce ${bgClass}`;
+            toastText.innerText = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // --- FINISH QUIZ AND SHOW RESULTS ---
+        function finishQuiz() {
+            playSound('victory');
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+
+            document.getElementById('score-correct').innerText = correctAnswersCount;
+            document.getElementById('score-wrong').innerText = wrongAnswersCount;
+            document.getElementById('score-total').innerText = score;
+
+            // Beri gelar ramah anak berdasarkan total poin
+            const resultEmoji = document.getElementById('result-emoji');
+            const resultTitle = document.getElementById('result-title');
+            const resultRank = document.getElementById('result-rank');
+
+            if (score >= 250) {
+                resultEmoji.innerText = "👑🏆";
+                resultTitle.innerText = "Dewa Perkalian & Pembagian!";
+                resultRank.innerText = "Gelar: Raja Hitung Tercepat Kelas Dunia";
+                triggerConfetti();
+            } else if (score >= 180) {
+                resultEmoji.innerText = "🛡️🚀";
+                resultTitle.innerText = "Ksatria Angka!";
+                resultRank.innerText = "Gelar: Detektif Matematika Super Pintar";
+                triggerConfetti();
+            } else {
+                resultEmoji.innerText = "🌱🎒";
+                resultTitle.innerText = "Hebat dan Terus Berjuang!";
+                resultRank.innerText = "Gelar: Petualang Angka Pemberani";
+            }
+
+            // Buat baris review daftar pertanyaan kuis
+            const reviewContainer = document.getElementById('review-container');
+            reviewContainer.innerHTML = '';
+            userResponses.forEach((res, i) => {
+                const item = document.createElement('div');
+                item.className = `p-4 rounded-xl border-l-8 ${res.status ? 'bg-emerald-50 border-emerald-500' : 'bg-red-50 border-red-400'} mb-2 text-sm`;
+                item.innerHTML = `
+                    <p class="font-bold text-gray-800">Misi ${i + 1} [${res.category}]: ${res.question}</p>
+                    <p class="mt-1">Pilihanmu: <span class="font-bold ${res.status ? 'text-emerald-700' : 'text-red-600'}">${res.userAnswer}</span> | Jawaban Benar: <span class="font-bold text-emerald-700">${res.correctAnswer}</span></p>
+                    <p class="text-xs text-slate-500 italic mt-1 font-semibold">Trik Cepat: ${res.explanation}</p>
+                `;
+                reviewContainer.appendChild(item);
+            });
+        }
+
+        function toggleReviewList() {
+            const container = document.getElementById('review-container');
+            container.classList.toggle('hidden');
+        }
+
+        function resetQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            score = 0;
+            updateHeaderScore();
+        }
+
+        // --- SCRATCHPAD DRAW CANVAS ENGINE ---
+        const canvasEl = document.getElementById('scratch-canvas');
+        const drawingCtx = canvasEl.getContext('2d');
+
+        function toggleScratchpad() {
+            const pad = document.getElementById('scratchpad');
+            pad.classList.toggle('hidden');
+            if (!pad.classList.contains('hidden')) {
+                resizeCanvas();
+            }
+        }
+
+        function resizeCanvas() {
+            const container = canvasEl.parentNode;
+            canvasEl.width = container.clientWidth;
+            canvasEl.height = container.clientHeight;
+            drawingCtx.lineCap = 'round';
+            drawingCtx.lineWidth = 4;
+            drawingCtx.strokeStyle = '#0d9488'; // warna kuas teal ceria
+        }
+
+        function clearCanvas() {
+            drawingCtx.clearRect(0, 0, canvasEl.width, canvasEl.height);
+        }
+
+        // Mouse drawing triggers
+        canvasEl.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            drawingCtx.beginPath();
+            const r = canvasEl.getBoundingClientRect();
+            drawingCtx.moveTo(e.clientX - r.left, e.clientY - r.top);
+        });
+
+        canvasEl.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const r = canvasEl.getBoundingClientRect();
+            drawingCtx.lineTo(e.clientX - r.left, e.clientY - r.top);
+            drawingCtx.stroke();
+        });
+
+        canvasEl.addEventListener('mouseup', () => isDrawing = false);
+
+        // Touch drawing triggers (mobile friendly)
+        canvasEl.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            isDrawing = true;
+            drawingCtx.beginPath();
+            const touch = e.touches[0];
+            const r = canvasEl.getBoundingClientRect();
+            drawingCtx.moveTo(touch.clientX - r.left, touch.clientY - r.top);
+        });
+
+        canvasEl.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!isDrawing) return;
+            const touch = e.touches[0];
+            const r = canvasEl.getBoundingClientRect();
+            drawingCtx.lineTo(touch.clientX - r.left, touch.clientY - r.top);
+            drawingCtx.stroke();
+        });
+
+        canvasEl.addEventListener('touchend', () => isDrawing = false);
+
+        // --- LIGHTWEIGHT CONFETTI EMITTER ---
+        const confettiCanvas = document.getElementById('confetti');
+        const confettiCtx = confettiCanvas.getContext('2d');
+
+        function triggerConfetti() {
+            confettiActive = true;
+            confettiCanvas.classList.remove('hidden');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            
+            particles = [];
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    r: Math.random() * 5 + 4,
+                    d: Math.random() * confettiCanvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            animateConfetti();
+            setTimeout(() => {
+                confettiActive = false;
+                confettiCanvas.classList.add('hidden');
+            }, 3000);
+        }
+
+        function animateConfetti() {
+            if (!confettiActive) return;
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            particles.forEach((p, idx) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle);
+                p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                confettiCtx.beginPath();
+                confettiCtx.lineWidth = p.r;
+                confettiCtx.strokeStyle = p.color;
+                confettiCtx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                confettiCtx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                confettiCtx.stroke();
+            });
+
+            requestAnimationFrame(animateConfetti);
+        }
+    </script>
+</body>
+</html>
