@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dunia Perkalian Ajaib - Belajar Menyenangkan Kelas 1-10</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Fredoka & Poppins -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Fredoka', 'Poppins', sans-serif;
+        }
+        .comic-shadow {
+            box-shadow: 6px 6px 0px 0px #1e293b;
+        }
+        .comic-shadow-sm {
+            box-shadow: 4px 4px 0px 0px #1e293b;
+        }
+        .comic-shadow-emerald {
+            box-shadow: 4px 4px 0px 0px #065f46;
+        }
+        .comic-shadow-rose {
+            box-shadow: 4px 4px 0px 0px #9f1239;
+        }
+        .comic-btn-active:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0px 0px #1e293b;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(1deg); }
+        }
+        .animate-float {
+            animation: float 4s ease-in-out infinite;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f0fdf4;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2dd4bf;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-[#e0f2fe] via-[#fef3c7] to-[#dcfce7] text-slate-800 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Sound Synthesizer Engine (Web Audio API) -->
+    <script>
+        const SoundFX = {
+            ctx: null,
+            init() {
+                if (!this.ctx) {
+                    this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+            },
+            playClick() {
+                this.init();
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.frequency.setValueAtTime(550, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1100, this.ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.1);
+            },
+            playSuccess() {
+                this.init();
+                let now = this.ctx.currentTime;
+                let notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 (Akor C Mayor Ceria)
+                notes.forEach((freq, idx) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.06);
+                    gain.gain.setValueAtTime(0.1, now + idx * 0.06);
+                    gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.06 + 0.12);
+                    osc.start(now + idx * 0.06);
+                    osc.stop(now + idx * 0.06 + 0.15);
+                });
+            },
+            playWrong() {
+                this.init();
+                let osc = this.ctx.createOscillator();
+                let gain = this.ctx.createGain();
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+                osc.frequency.linearRampToValueAtTime(90, this.ctx.currentTime + 0.25);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.25);
+            },
+            playFanfare() {
+                this.init();
+                let now = this.ctx.currentTime;
+                let arpeggio = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99, 1046.50];
+                arpeggio.forEach((freq, idx) => {
+                    let osc = this.ctx.createOscillator();
+                    let gain = this.ctx.createGain();
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                    gain.gain.setValueAtTime(0.08, now + idx * 0.08);
+                    gain.gain.linearRampToValueAtTime(0.01, now + idx * 0.08 + 0.4);
+                    osc.start(now + idx * 0.08);
+                    osc.stop(now + idx * 0.08 + 0.5);
+                });
+            }
+        };
+    </script>
+
+    <!-- Header / HUD Navigation -->
+    <header class="bg-white border-b-4 border-amber-400 px-4 py-3 sticky top-0 z-50 shadow-md">
+        <div class="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <span class="text-3xl animate-bounce">⚡</span>
+                <div>
+                    <h1 class="font-black text-xl text-teal-900 leading-none tracking-wide">DUNIA PERKALIAN AJAIB</h1>
+                    <span class="text-xs text-slate-500 font-bold">Cara Tercepat & Terasyik Hafal Perkalian 1-10!</span>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-3">
+                <div class="bg-amber-100 px-3.5 py-1.5 rounded-full border-2 border-slate-900 flex items-center gap-1.5 shadow-sm">
+                    <span class="text-lg">⭐</span>
+                    <span id="hud-score" class="font-black text-amber-800 text-sm">0 Poin</span>
+                </div>
+                <button onclick="showSection('main-menu')" class="bg-indigo-100 hover:bg-indigo-200 border-2 border-indigo-400 active:scale-95 transition text-indigo-700 font-black rounded-full px-4 py-1.5 text-sm shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-house"></i> Menu Utama
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 flex flex-col justify-center items-center">
+
+        <!-- SECTION 1: MAIN MENU -->
+        <div id="main-menu" class="w-full space-y-6 text-center animate-fade-in">
+            <div class="space-y-2">
+                <span class="text-indigo-950 font-black uppercase tracking-widest text-xs bg-amber-300 px-4 py-1.5 rounded-full border-2 border-slate-900 glow-yellow">Taman Bermain Matematika</span>
+                <h2 class="text-3xl md:text-5xl font-black bg-gradient-to-r from-emerald-600 via-teal-500 to-indigo-600 bg-clip-text text-transparent">Pilih Petualangan Belajarmu!</h2>
+                <p class="text-slate-600 text-sm md:text-base font-bold max-w-lg mx-auto">Selamat datang, Ksatria Angka! Pilih salah satu dari empat pulau di bawah ini untuk memulai latihan perkalian seru!</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto pt-4">
+                <!-- Card 1: Tabel Perkalian -->
+                <div onclick="showSection('multiplication-table-section')" class="bg-white border-4 border-slate-900 rounded-3xl p-5 comic-shadow cursor-pointer hover:-translate-y-1 transition-all flex flex-col items-center justify-between text-center gap-3 select-none">
+                    <span class="text-5xl block animate-float">📊</span>
+                    <h3 class="font-black text-lg text-teal-800">1. Tabel Perkalian Interaktif</h3>
+                    <p class="text-xs text-slate-500 font-bold">Melihat pola peta angka lengkap perkalian 1 sampai 10 secara terorganisir.</p>
+                    <button class="w-full py-2 bg-teal-400 hover:bg-teal-500 border-2 border-slate-900 rounded-xl font-black text-slate-900 text-xs">Jelajahi Tabel</button>
+                </div>
+
+                <!-- Card 2: Kamus Trik Cepat -->
+                <div onclick="showSection('tricks-section')" class="bg-white border-4 border-slate-900 rounded-3xl p-5 comic-shadow cursor-pointer hover:-translate-y-1 transition-all flex flex-col items-center justify-between text-center gap-3 select-none">
+                    <span class="text-5xl block animate-float">💡</span>
+                    <h3 class="font-black text-lg text-amber-700">2. Kamus "Cara Cepat" Ajaib</h3>
+                    <p class="text-xs text-slate-500 font-bold">Rahasia menghafal cepat lewat trik jari, trik ganda, trik setengah, dan trik nol.</p>
+                    <button class="w-full py-2 bg-amber-400 hover:bg-amber-500 border-2 border-slate-900 rounded-xl font-black text-slate-900 text-xs">Buka Kamus Rahasia</button>
+                </div>
+
+                <!-- Card 3: Eksplorasi Visual Grid -->
+                <div onclick="showSection('visual-grid-section')" class="bg-white border-4 border-slate-900 rounded-3xl p-5 comic-shadow cursor-pointer hover:-translate-y-1 transition-all flex flex-col items-center justify-between text-center gap-3 select-none">
+                    <span class="text-5xl block animate-float">🔴</span>
+                    <h3 class="font-black text-lg text-emerald-700">3. Eksplorator Kotak Visual</h3>
+                    <p class="text-xs text-slate-500 font-bold">Masukkan angka dan lihat bentuk visual titik perkalian untuk memahami konsep logisnya.</p>
+                    <button class="w-full py-2 bg-emerald-400 hover:bg-emerald-500 border-2 border-slate-900 rounded-xl font-black text-slate-900 text-xs">Coba Pasang Kotak</button>
+                </div>
+
+                <!-- Card 4: Game Kuis Kilat -->
+                <div onclick="showSection('game-section')" class="bg-white border-4 border-slate-900 rounded-3xl p-5 comic-shadow cursor-pointer hover:-translate-y-1 transition-all flex flex-col items-center justify-between text-center gap-3 select-none">
+                    <span class="text-5xl block animate-float">🎮</span>
+                    <h3 class="font-black text-lg text-indigo-800">4. Arena Kuis Berhadiah</h3>
+                    <p class="text-xs text-slate-500 font-bold">Uji seberapa cepat ingatanmu! Raih poin dan kumpulkan lencana bintang emas.</p>
+                    <button class="w-full py-2 bg-indigo-400 hover:bg-indigo-500 border-2 border-slate-900 rounded-xl font-black text-slate-900 text-xs">Mulai Duel Kuis</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 2: INTERACTIVE MULTIPLICATION TABLE -->
+        <div id="multiplication-table-section" class="hidden w-full max-w-4xl space-y-6 animate-fade-in">
+            <div class="text-center space-y-2">
+                <span class="text-indigo-950 font-black bg-teal-300 px-3 py-1 rounded-full border-2 border-slate-900 text-xs uppercase">Mode 1: Peta Angka</span>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800">Tabel Perkalian Interaktif 1-10</h2>
+                <p class="text-xs sm:text-sm text-slate-500 font-bold">Klik tombol angka di baris samping kiri atau baris atas untuk menyorot hasil perkaliannya!</p>
+            </div>
+
+            <div class="grid md:grid-cols-12 gap-6 items-start">
+                <!-- Sidebar Selection for specific table (1-10) -->
+                <div class="md:col-span-3 bg-white border-4 border-slate-900 rounded-2xl p-4 comic-shadow-sm space-y-3">
+                    <h4 class="font-black text-sm text-teal-800 border-b-2 border-slate-100 pb-1.5 uppercase">Tabel Angka Tunggal</h4>
+                    <div class="grid grid-cols-5 md:grid-cols-2 gap-1.5">
+                        <button onclick="focusTable(1)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-teal-200">Kali 1</button>
+                        <button onclick="focusTable(2)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 2</button>
+                        <button onclick="focusTable(3)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 3</button>
+                        <button onclick="focusTable(4)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 4</button>
+                        <button onclick="focusTable(5)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 5</button>
+                        <button onclick="focusTable(6)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 6</button>
+                        <button onclick="focusTable(7)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 7</button>
+                        <button onclick="focusTable(8)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 8</button>
+                        <button onclick="focusTable(9)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 9</button>
+                        <button onclick="focusTable(10)" class="tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-bold text-xs bg-white">Kali 10</button>
+                    </div>
+                    <!-- Mini Explainer Display inside Sidebar -->
+                    <div class="bg-amber-50 p-2.5 rounded-xl border border-slate-300 text-center font-bold text-[11px] text-slate-700">
+                        <span id="table-badge" class="block font-black text-xs text-teal-800">Tabel Perkalian 1</span>
+                        Perkalian angka <span id="table-explainer-num">1</span> adalah penambahan angka <span id="table-explainer-num-2">1</span> secara beruntun.
+                    </div>
+                </div>
+
+                <!-- Grid Table View (Matrix layout) -->
+                <div class="md:col-span-9 bg-white border-4 border-slate-900 rounded-3xl p-4 comic-shadow overflow-x-auto">
+                    <!-- Matrix Grid Container -->
+                    <div class="min-w-[420px] grid grid-cols-11 gap-1 text-center font-bold text-xs" id="matrix-grid">
+                        <!-- Javascript will dynamically inject header row, side column, and grid buttons -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Focused Cell Details Modal/Box -->
+            <div id="matrix-detail-box" class="bg-indigo-50 border-4 border-slate-900 rounded-2xl p-4 max-w-xl mx-auto comic-shadow-sm flex items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <span class="text-4xl">🧮</span>
+                    <div>
+                        <h4 class="font-black text-indigo-900 text-sm">Detail Rumus Logika:</h4>
+                        <p id="matrix-formula-string" class="text-lg font-black text-indigo-950">2 × 3 = 3 + 3 = 6</p>
+                    </div>
+                </div>
+                <div class="bg-white px-4 py-2 rounded-xl border-2 border-slate-900">
+                    <span class="text-xs text-slate-500 font-bold block">HASIL</span>
+                    <span id="matrix-result-display" class="text-xl font-black text-indigo-600">6</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 3: "CARA CEPAT" TRICKS LIBRARY -->
+        <div id="tricks-section" class="hidden w-full max-w-4xl space-y-6 animate-fade-in">
+            <div class="text-center space-y-2">
+                <span class="text-indigo-950 font-black bg-amber-300 px-3 py-1 rounded-full border-2 border-slate-900 text-xs uppercase">Mode 2: Trik Ajaib</span>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800">Kamus Trik "Cara Cepat" Perkalian</h2>
+                <p class="text-xs sm:text-sm text-slate-500 font-bold">Pelajari trik cepat berikut agar ingatan hafalanmu bekerja secepat kilat!</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-4">
+                <!-- Trick Left Selector Bar -->
+                <div class="bg-white border-4 border-slate-900 rounded-2xl p-4 comic-shadow-sm space-y-2 h-fit">
+                    <h4 class="font-black text-xs text-slate-500 uppercase tracking-widest border-b pb-1.5 mb-2">Pilih Angka Trik:</h4>
+                    <button onclick="showTrickCard('trick-2')" class="trick-selector w-full text-left p-2.5 bg-amber-200 border-2 border-slate-900 rounded-xl font-black text-xs flex justify-between items-center transition-all">
+                        <span>👥 Trik Angka 2 (Ganda)</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                    <button onclick="showTrickCard('trick-5')" class="trick-selector w-full text-left p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-xs flex justify-between items-center transition-all">
+                        <span>✖️ Trik Angka 5 (Setengah 10)</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                    <button onclick="showTrickCard('trick-6-9')" class="trick-selector w-full text-left p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-xs flex justify-between items-center transition-all">
+                        <span>🖐️ Trik 6 s/d 9 (Jarimatika)</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                    <button onclick="showTrickCard('trick-9')" class="trick-selector w-full text-left p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-xs flex justify-between items-center transition-all">
+                        <span>✖️ Trik Angka 9 (Jari Ajaib)</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                    <button onclick="showTrickCard('trick-10')" class="trick-selector w-full text-left p-2.5 bg-white border border-slate-300 rounded-xl font-bold text-xs flex justify-between items-center transition-all">
+                        <span>✖️ Trik Angka 10 (Tambah Nol)</span> <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                </div>
+
+                <!-- Trick Details Card Holder (Displays 1 of 5 cards) -->
+                <div class="md:col-span-2 bg-white border-4 border-slate-900 rounded-3xl p-6 comic-shadow relative min-h-[340px] flex flex-col justify-between">
+                    
+                    <!-- Card 1: Trick 2 (Ganda) -->
+                    <div id="trick-2" class="trick-card space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl bg-amber-100 p-2.5 rounded-2xl border-2 border-slate-900">👥</span>
+                            <div>
+                                <h3 class="font-black text-lg text-slate-800">Trik Perkalian 2: Konsep "Menggandakan"</h3>
+                                <p class="text-xs text-slate-500 font-bold">Semua perkalian 2 tinggal ditambah dengan angka itu sendiri!</p>
+                            </div>
+                        </div>
+                        <div class="bg-amber-50 p-4 rounded-xl border border-slate-300 space-y-2">
+                            <p class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                                "Mengalikan angka dengan 2 itu sama saja dengan menggandakan angka tersebut!"
+                            </p>
+                            <div class="grid grid-cols-2 gap-2 text-center text-xs font-black pt-2">
+                                <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                    <span class="text-teal-600 block">2 × 6 = ...</span>
+                                    <span class="text-slate-500 text-[10px] block">Sama saja dengan</span>
+                                    <span class="text-indigo-600">6 + 6 = 12</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                    <span class="text-teal-600 block">2 × 8 = ...</span>
+                                    <span class="text-slate-500 text-[10px] block">Sama saja dengan</span>
+                                    <span class="text-indigo-600">8 + 8 = 16</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2: Trick 5 (Setengah 10) -->
+                    <div id="trick-5" class="trick-card hidden space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl bg-rose-100 p-2.5 rounded-2xl border-2 border-slate-900">🤚</span>
+                            <div>
+                                <h3 class="font-black text-lg text-slate-800">Trik Perkalian 5: Setengah dari Kali 10</h3>
+                                <p class="text-xs text-slate-500 font-bold">Ujung angka perkalian 5 pasti selalu diakhiri dengan angka 5 atau 0!</p>
+                            </div>
+                        </div>
+                        <div class="bg-rose-50 p-4 rounded-xl border border-slate-300 space-y-2">
+                            <p class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                                <strong class="text-rose-700">Trik Cepat Ganjil & Genap:</strong><br>
+                                • Jika dikali <strong class="text-indigo-600">angka genap</strong>, simpan setengah dari angka tersebut lalu tambahkan angka <strong class="text-emerald-600">0</strong> di belakangnya.<br>
+                                • Jika dikali <strong class="text-indigo-600">angka ganjil</strong>, hasilnya pasti berujung dengan angka <strong class="text-amber-600">5</strong> di belakang.
+                            </p>
+                            <div class="grid grid-cols-2 gap-2 text-center text-xs font-black pt-2">
+                                <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                    <span class="text-rose-600 block">5 × 6 = ...</span>
+                                    <span class="text-slate-500 text-[10px] block">Setengah dari 6 adalah 3. Pasang 0:</span>
+                                    <span class="text-indigo-600">30</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                    <span class="text-rose-600 block">5 × 8 = ...</span>
+                                    <span class="text-slate-500 text-[10px] block">Setengah dari 8 adalah 4. Pasang 0:</span>
+                                    <span class="text-indigo-600">40</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3: Trick 6-9 (Jarimatika Baru) -->
+                    <div id="trick-6-9" class="trick-card hidden space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl bg-teal-100 p-2.5 rounded-2xl border-2 border-slate-900">🖐️🖐️</span>
+                            <div>
+                                <h3 class="font-black text-lg text-slate-800">Trik Perkalian 6 s/d 9: Jarimatika</h3>
+                                <p class="text-xs text-slate-500 font-bold">Gunakan sepuluh jarimu untuk menghitung perkalian besar dengan cepat!</p>
+                            </div>
+                        </div>
+                        <div class="bg-teal-50 p-4 rounded-xl border border-slate-300 space-y-2">
+                            <p class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                                <strong class="text-teal-700">Aturan Sederhana Jarimatika:</strong><br>
+                                • Jari jempol hingga kelingking melambangkan angka 6 sampai 10 secara berurutan.<br>
+                                • <strong class="text-indigo-600">Jari yang BERDIRI</strong> dijumlahkan lalu dikali <strong class="text-indigo-600">10</strong> (sebagai Puluhan).<br>
+                                • <strong class="text-rose-600">Jari yang DILIPAT</strong> dikalikan kiri × kanan (sebagai Satuan).
+                            </p>
+                            <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                <span class="text-teal-600 block font-black text-center text-xs">Simulasi: 7 × 8</span>
+                                <div class="grid grid-cols-2 gap-2 text-center text-[11px] font-bold mt-1.5 border-t pt-1.5">
+                                    <div>
+                                        <span class="text-indigo-600 block">Jari Berdiri (Puluhan):</span>
+                                        <span>2 Kiri + 3 Kanan = 5 Jari</span>
+                                        <span class="text-slate-500 block">5 × 10 = <strong class="text-indigo-700">50</strong></span>
+                                    </div>
+                                    <div class="border-l">
+                                        <span class="text-rose-600 block">Jari Dilipat (Satuan):</span>
+                                        <span>3 Kiri × 2 Kanan = 6</span>
+                                        <span class="text-slate-500 block">3 × 2 = <strong class="text-rose-700">6</strong></span>
+                                    </div>
+                                </div>
+                                <div class="mt-2 text-center text-xs bg-emerald-50 py-1.5 rounded-lg border border-emerald-200 font-black text-emerald-800">
+                                    Hasil Penggabungan: 50 + 6 = 56! 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4: Trick 9 (Jari Ajaib) -->
+                    <div id="trick-9" class="trick-card hidden space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl bg-indigo-100 p-2.5 rounded-2xl border-2 border-slate-900">🖐️🖐️</span>
+                            <div>
+                                <h3 class="font-black text-lg text-slate-800">Trik Perkalian 9: Sulap Sepuluh Jari</h3>
+                                <p class="text-xs text-slate-500 font-bold">Gunakan jarimu! Jari sebelah kiri lipatan adalah puluhan, sebelah kanan adalah satuan.</p>
+                            </div>
+                        </div>
+                        <div class="bg-indigo-50 p-4 rounded-xl border border-slate-300 space-y-2">
+                            <p class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                                <strong class="text-indigo-700">Contoh Praktik: 9 × 3</strong><br>
+                                Lipat jarimu yang ke-3 dari kiri (jari tengah tangan kiri). <br>
+                                • Jari sebelah kiri lipatan = <strong class="text-indigo-600">2 jari</strong> (sebagai Puluhan = 20)<br>
+                                • Jari sebelah kanan lipatan = <strong class="text-indigo-600">7 jari</strong> (sebagai Satuan = 7)<br>
+                                👉 Hasil gabungan: <strong class="text-emerald-600">27</strong>!
+                            </p>
+                            <div class="flex justify-center py-1">
+                                <!-- Quick SVG Finger representation -->
+                                <svg class="w-32 h-14" viewBox="0 0 100 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <!-- Left hand -->
+                                    <rect x="5" y="10" width="4" height="25" rx="2" fill="#94a3b8" />
+                                    <rect x="11" y="5" width="4" height="30" rx="2" fill="#94a3b8" />
+                                    <rect x="17" y="8" width="4" height="20" rx="2" fill="#ef4444" stroke="#1e293b" stroke-width="1" /> <!-- Folded 3rd finger -->
+                                    <rect x="23" y="10" width="4" height="25" rx="2" fill="#94a3b8" />
+                                    <rect x="29" y="15" width="4" height="20" rx="2" fill="#94a3b8" />
+                                    <!-- Right hand -->
+                                    <rect x="55" y="15" width="4" height="20" rx="2" fill="#94a3b8" />
+                                    <rect x="61" y="10" width="4" height="25" rx="2" fill="#94a3b8" />
+                                    <rect x="67" y="5" width="4" height="30" rx="2" fill="#94a3b8" />
+                                    <rect x="73" y="8" width="4" height="27" rx="2" fill="#94a3b8" />
+                                    <rect x="79" y="12" width="4" height="23" rx="2" fill="#94a3b8" />
+                                    <text x="3" y="38" font-size="6" fill="#1e293b" font-weight="bold">2 Jari (20)</text>
+                                    <text x="45" y="38" font-size="6" fill="#ef4444" font-weight="bold">[3 Lipat]</text>
+                                    <text x="73" y="38" font-size="6" fill="#1e293b" font-weight="bold">7 Jari (7)</text>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 5: Trick 10 (Tambah Nol) -->
+                    <div id="trick-10" class="trick-card hidden space-y-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-4xl bg-emerald-100 p-2.5 rounded-2xl border-2 border-slate-900">🎈</span>
+                            <div>
+                                <h3 class="font-black text-lg text-slate-800">Trik Perkalian 10: Tempel Si Penyelamat 0</h3>
+                                <p class="text-xs text-slate-500 font-bold">Trik paling gampang sedunia! Cukup tempel angka 0 di belakang angka yang dikalikan.</p>
+                            </div>
+                        </div>
+                        <div class="bg-emerald-50 p-4 rounded-xl border border-slate-300 space-y-2">
+                            <p class="text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
+                                "Angka berapa pun yang dikalikan dengan 10, kamu hanya perlu menyalin angka tersebut lalu menyisipkan angka <strong class="text-emerald-600">0</strong> di belakang ujungnya!"
+                            </p>
+                            <div class="grid grid-cols-2 gap-2 text-center text-xs font-black pt-2">
+                                <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                    <span class="text-emerald-600 block">10 × 4 = ...</span>
+                                    <span class="text-slate-500 text-[10px] block">Tulis angka 4, lalu tempel 0:</span>
+                                    <span class="text-indigo-600">40</span>
+                                </div>
+                                <div class="bg-white p-3 rounded-lg border border-slate-300">
+                                    <span class="text-emerald-600 block">10 × 9 = ...</span>
+                                    <span class="text-slate-500 text-[10px] block">Tulis angka 9, lalu tempel 0:</span>
+                                    <span class="text-indigo-600">90</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Trick Navigation -->
+                    <div class="flex justify-between items-center border-t border-slate-100 pt-3 mt-4 text-xs font-bold text-slate-500">
+                        <span>💡 Gunakan trik ini saat menghadapi kuis ksatria angka!</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 4: VISUAL GRID EXPLORER (PENJUMLAHAN BERULANG) -->
+        <div id="visual-grid-section" class="hidden w-full max-w-3xl space-y-6 animate-fade-in">
+            <div class="text-center space-y-2">
+                <span class="text-indigo-950 font-black bg-emerald-300 px-3 py-1 rounded-full border-2 border-slate-900 text-xs uppercase">Mode 3: Eksplorasi Grid</span>
+                <h2 class="text-2xl md:text-3xl font-black text-slate-800">Eksplorator Grid Penjumlahan Berulang</h2>
+                <p class="text-xs sm:text-sm text-slate-500 font-bold">Atur slider di bawah untuk merancang sendiri jumlah baris dan kolom yang kamu inginkan!</p>
+            </div>
+
+            <!-- Controller Sliders -->
+            <div class="bg-white border-4 border-slate-900 rounded-2xl p-4 md:p-6 comic-shadow-sm grid sm:grid-cols-2 gap-4">
+                <!-- Row Slider (A) -->
+                <div class="space-y-2 bg-emerald-50/50 p-3 rounded-xl border border-emerald-200">
+                    <div class="flex justify-between font-black text-sm">
+                        <span class="text-emerald-800">Baris / Wadah (A)</span>
+                        <span class="bg-white border border-slate-400 px-2.5 py-0.5 rounded-lg text-emerald-600 text-xs" id="slider-val-rows">3 Baris</span>
+                    </div>
+                    <input type="range" id="input-rows" min="1" max="10" value="3" oninput="updateVisualGrid()" class="w-full h-2 bg-emerald-200 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+                </div>
+
+                <!-- Column Slider (B) -->
+                <div class="space-y-2 bg-indigo-50/50 p-3 rounded-xl border border-indigo-200">
+                    <div class="flex justify-between font-black text-sm">
+                        <span class="text-indigo-800">Isi tiap Baris (B)</span>
+                        <span class="bg-white border border-slate-400 px-2.5 py-0.5 rounded-lg text-indigo-600 text-xs" id="slider-val-cols">4 Butir</span>
+                    </div>
+                    <input type="range" id="input-cols" min="1" max="10" value="4" oninput="updateVisualGrid()" class="w-full h-2 bg-indigo-200 rounded-lg appearance-none cursor-pointer accent-indigo-500">
+                </div>
+            </div>
+
+            <!-- Dynamic Graphic Representation Area -->
+            <div class="bg-white border-4 border-slate-900 rounded-3xl p-6 comic-shadow text-center space-y-6 flex flex-col justify-between min-h-[300px]">
+                <!-- Formula Heading -->
+                <div class="text-center">
+                    <span class="text-xs text-slate-400 font-extrabold uppercase block tracking-wider">Rumus Representasi</span>
+                    <h3 id="visual-formula-string" class="text-2xl sm:text-3xl font-black text-indigo-900">3 × 4 = 4 + 4 + 4 = 12</h3>
+                </div>
+
+                <!-- Dots Container -->
+                <div class="flex items-center justify-center py-4 overflow-auto">
+                    <div id="dots-grid-container" class="grid gap-2 p-4 bg-amber-50/50 border-4 border-dashed border-amber-300 rounded-2xl max-w-full">
+                        <!-- Dynamic smile / stars injected by JS -->
+                    </div>
+                </div>
+
+                <!-- Footer Summary description -->
+                <div class="p-3 bg-teal-50 border border-teal-300 rounded-xl max-w-md mx-auto text-xs sm:text-sm font-bold text-teal-800">
+                    "Ada <span id="visual-explainer-rows" class="text-indigo-600">3</span> kelompok piring, masing-masing berisi <span id="visual-explainer-cols" class="text-indigo-600">4</span> donat ceria!"
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION 5: GAME QUIZ TANTANGAN -->
+        <div id="game-section" class="hidden w-full max-w-2xl space-y-6 animate-fade-in">
+            
+            <!-- Setup Kuis Game -->
+            <div id="game-setup-box" class="bg-white border-4 border-slate-900 rounded-3xl p-6 comic-shadow space-y-6">
+                <div class="text-center space-y-2">
+                    <span class="text-indigo-950 font-black bg-indigo-300 px-3 py-1 rounded-full border-2 border-slate-900 text-xs uppercase">Arena Uji Nyali</span>
+                    <h2 class="text-2xl md:text-3xl font-black text-slate-800">Arena Kuis Ksatria Angka</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 font-bold">Apakah ingatanmu sudah tajam? Pilih tingkat kesulitan belajarmu di bawah ini!</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 font-bold text-center max-w-md mx-auto pt-2">
+                    <!-- Level 1 -->
+                    <button onclick="startGame(1)" class="p-4 bg-white hover:bg-emerald-100 border-2 border-slate-900 rounded-2xl comic-shadow-sm comic-btn-active transition-all flex flex-col items-center">
+                        <span class="text-3xl">🥉</span>
+                        <span class="text-sm font-black text-slate-800 mt-1 block">Level 1 (Mudah)</span>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Perkalian 1, 2, 5, 10</span>
+                    </button>
+                    <!-- Level 2 -->
+                    <button onclick="startGame(2)" class="p-4 bg-white hover:bg-amber-100 border-2 border-slate-900 rounded-2xl comic-shadow-sm comic-btn-active transition-all flex flex-col items-center">
+                        <span class="text-3xl">🥈</span>
+                        <span class="text-sm font-black text-slate-800 mt-1 block">Level 2 (Normal)</span>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Perkalian 3, 4, 6</span>
+                    </button>
+                    <!-- Level 3 -->
+                    <button onclick="startGame(3)" class="p-4 bg-white hover:bg-rose-100 border-2 border-slate-900 rounded-2xl comic-shadow-sm comic-btn-active transition-all flex flex-col items-center">
+                        <span class="text-3xl">🥇</span>
+                        <span class="text-sm font-black text-slate-800 mt-1 block">Level 3 (Sulit)</span>
+                        <span class="text-[10px] text-slate-400 block mt-0.5">Perkalian 7, 8, 9</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Gameplay Card -->
+            <div id="game-play-box" class="hidden bg-white border-4 border-slate-900 rounded-3xl p-5 md:p-6 comic-shadow relative min-h-[380px] flex flex-col justify-between">
+                <!-- Game Header Info -->
+                <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                    <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-indigo-100 text-indigo-800 rounded-full border border-slate-300">
+                        Misi Angka <span id="game-q-num">1</span> / 10
+                    </span>
+                    <span class="text-[10px] font-black uppercase tracking-widest px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full border border-slate-300" id="game-level-badge">
+                        Level 1
+                    </span>
+                </div>
+
+                <!-- Big Active Question Math -->
+                <div class="my-4 py-6 bg-slate-50 border-2 border-slate-900 rounded-2xl relative text-center">
+                    <span class="absolute -top-2.5 -left-1.5 bg-rose-500 text-white font-black text-[9px] px-2 py-0.5 rounded border border-slate-900 uppercase">Tantangan Kilat</span>
+                    <h3 id="game-question-string" class="text-4xl md:text-5xl font-black text-indigo-950 tracking-wider">
+                        5 × 6 = ...
+                    </h3>
+                </div>
+
+                <!-- Shuffled Answer Options Grid -->
+                <div class="grid grid-cols-2 gap-3" id="game-choices-grid">
+                    <!-- Loaded dynamically via JS -->
+                </div>
+
+                <!-- Tiny Feedback Text area -->
+                <div id="game-feedback-text" class="text-center font-black text-sm h-6"></div>
+
+                <!-- Bottom Navigation of Gameplay -->
+                <div class="flex justify-end pt-2 border-t border-slate-100">
+                    <button id="game-btn-next" onclick="nextGameQuestion()" class="hidden px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs rounded-xl border-2 border-slate-900 comic-shadow-sm comic-btn-active flex items-center gap-1.5 transition-all">
+                        Tantangan Selanjutnya <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Graduation / Finish Game Summary Card -->
+            <div id="game-graduation-box" class="hidden bg-white border-4 border-slate-900 rounded-3xl p-6 comic-shadow text-center space-y-6 max-w-sm mx-auto">
+                <span class="text-7xl animate-bounce block">🏆</span>
+                <div class="space-y-1">
+                    <span class="text-indigo-950 font-black uppercase tracking-widest text-[10px] bg-amber-300 px-3 py-1 rounded-full border-2 border-slate-900">Sertifikat Kehormatan</span>
+                    <h3 class="text-2xl font-black text-indigo-950">KSATRIA PERKALIAN</h3>
+                </div>
+
+                <div class="p-4 bg-amber-50 rounded-xl border-2 border-slate-900 space-y-2 text-xs">
+                    <p class="font-bold text-slate-700">Diberikan secara terhormat kepada anak tangguh atas kesuksesannya memecahkan kuis tantangan matematika!</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2 text-xs font-black">
+                    <div class="bg-emerald-100 p-2.5 rounded-xl border-2 border-slate-900">
+                        <span class="text-emerald-800 block text-[10px]">BENAR</span>
+                        <span id="game-final-correct" class="text-lg text-slate-900">10 / 10</span>
+                    </div>
+                    <div class="bg-amber-100 p-2.5 rounded-xl border-2 border-slate-900">
+                        <span class="text-amber-800 block text-[10px]">TOTAL SKOR</span>
+                        <span id="game-final-score" class="text-lg text-slate-900">1000 Poin</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-2">
+                    <button onclick="showSection('game-setup-box')" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black border-2 border-slate-900 rounded-xl comic-shadow-sm comic-btn-active">Ganti Level</button>
+                    <button onclick="startGame(activeGameLevel)" class="w-1/2 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black border-2 border-slate-900 rounded-xl comic-shadow-sm comic-btn-active">Main Lagi</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- FLOATING TOAST NOTIFICATION -->
+    <div id="toast" class="hidden fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 text-white font-black px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce">
+        <span id="toast-icon">✨</span> <span id="toast-text">Jawaban Benar! Luar Biasa!</span>
+    </div>
+
+    <!-- CANVAS FOR CONFETTI SELEBRASI -->
+    <canvas id="confetti" class="fixed inset-0 pointer-events-none z-50 w-full h-full hidden"></canvas>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-slate-200 py-2.5 text-center text-[10px] text-slate-400 font-bold mt-4">
+        Kurikulum Merdeka • Dirancang Khusus agar Anak Lancar Hafal Perkalian 1-10 secara Logis
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT CONTROLLER -->
+    <script>
+        // Game active state
+        let activeScore = 0;
+        let activeGameLevel = 1;
+        let activeGameIdx = 0;
+        let activeGameQuestions = [];
+        let activeGameAttempts = 0;
+        let gameCorrectCount = 0;
+
+        // Visual Table state
+        let tableFocusedNum = 1;
+
+        // Confetti Engine variables
+        let confettiActive = false;
+        let particles = [];
+
+        // Switching Active Section Wrapper
+        function showSection(sectionId) {
+            SoundFX.playClick();
+            
+            // Hide all
+            document.getElementById('main-menu').classList.add('hidden');
+            document.getElementById('multiplication-table-section').classList.add('hidden');
+            document.getElementById('tricks-section').classList.add('hidden');
+            document.getElementById('visual-grid-section').classList.add('hidden');
+            document.getElementById('game-section').classList.add('hidden');
+
+            // Show selected one
+            if (sectionId === 'game-setup-box') {
+                document.getElementById('game-section').classList.remove('hidden');
+                document.getElementById('game-setup-box').classList.remove('hidden');
+                document.getElementById('game-play-box').classList.add('hidden');
+                document.getElementById('game-graduation-box').classList.add('hidden');
+            } else {
+                document.getElementById(sectionId).classList.remove('hidden');
+            }
+
+            // Initialize details on load
+            if (sectionId === 'multiplication-table-section') {
+                initMatrixTable();
+                focusTable(1);
+            }
+            if (sectionId === 'visual-grid-section') {
+                updateVisualGrid();
+            }
+            if (sectionId === 'tricks-section') {
+                showTrickCard('trick-2');
+            }
+        }
+
+        // --- SUBSECTION 1: TABEL INTERAKTIF ---
+        function initMatrixTable() {
+            const grid = document.getElementById('matrix-grid');
+            grid.innerHTML = "";
+
+            // Top-left corner placeholder
+            const blankCorner = document.createElement('div');
+            blankCorner.className = "bg-slate-100 p-1.5 rounded-md border border-slate-300 font-black text-slate-400";
+            blankCorner.textContent = "✖️";
+            grid.appendChild(blankCorner);
+
+            // Generate header row (1 to 10)
+            for (let c = 1; c <= 10; c++) {
+                const headerCol = document.createElement('div');
+                headerCol.className = `p-1.5 rounded-md border border-slate-900 font-black text-indigo-900 bg-indigo-50`;
+                headerCol.textContent = c;
+                grid.appendChild(headerCol);
+            }
+
+            // Generate other rows
+            for (let r = 1; r <= 10; r++) {
+                // Left Column header
+                const leftHeader = document.createElement('div');
+                leftHeader.className = `p-1.5 rounded-md border border-slate-900 font-black text-indigo-900 bg-indigo-50`;
+                leftHeader.textContent = r;
+                grid.appendChild(leftHeader);
+
+                // Grid Cells
+                for (let c = 1; c <= 10; c++) {
+                    const cell = document.createElement('button');
+                    cell.id = `cell-${r}-${c}`;
+                    cell.className = "p-1.5 rounded-md border border-slate-200 hover:border-slate-800 transition-all font-black text-slate-700 bg-white shadow-sm active:scale-95";
+                    cell.textContent = r * c;
+                    cell.onclick = () => selectMatrixCell(r, c);
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function focusTable(num) {
+            SoundFX.playClick();
+            tableFocusedNum = num;
+
+            // Highlight focused sidebar button
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                if (idx + 1 === num) {
+                    btn.className = "tab-btn py-1.5 rounded-lg border-2 border-slate-900 font-black text-xs bg-teal-300 text-teal-900 shadow-sm";
+                } else {
+                    btn.className = "tab-btn py-1.5 rounded-lg border border-slate-300 font-bold text-xs bg-white text-slate-500 hover:border-slate-400";
+                }
+            });
+
+            // Update descriptors
+            document.getElementById('table-badge').textContent = `Tabel Perkalian ${num}`;
+            document.getElementById('table-explainer-num').textContent = num;
+            document.getElementById('table-explainer-num-2').textContent = num;
+
+            // Soft-highlight corresponding rows/cols inside grid
+            for (let r = 1; r <= 10; r++) {
+                for (let c = 1; c <= 10; c++) {
+                    const el = document.getElementById(`cell-${r}-${c}`);
+                    if (!el) continue;
+
+                    if (r === num || c === num) {
+                        el.className = "p-1.5 rounded-md border-2 border-teal-500 hover:border-teal-700 transition-all font-black text-teal-800 bg-teal-50/70 shadow-sm active:scale-95";
+                    } else {
+                        el.className = "p-1.5 rounded-md border border-slate-200 hover:border-slate-800 transition-all font-black text-slate-700 bg-white shadow-sm active:scale-95";
+                    }
+                }
+            }
+        }
+
+        function selectMatrixCell(r, c) {
+            SoundFX.playClick();
+            
+            // Build simple repetitive summation logic string
+            let sumArr = [];
+            for (let i = 0; i < r; i++) {
+                sumArr.push(c);
+            }
+            const additionString = sumArr.join(" + ");
+            const resultVal = r * c;
+
+            document.getElementById('matrix-formula-string').textContent = `${r} × ${c} = ${additionString} = ${resultVal}`;
+            document.getElementById('matrix-result-display').textContent = resultVal;
+
+            // Flash effect highlight on that specific element
+            document.querySelectorAll("[id^='cell-']").forEach(cell => {
+                cell.classList.remove('ring-4', 'ring-indigo-400');
+            });
+            const activeCell = document.getElementById(`cell-${r}-${c}`);
+            if (activeCell) {
+                activeCell.classList.add('ring-4', 'ring-indigo-400');
+            }
+        }
+
+        // --- SUBSECTION 2: TRICKS CARDS ---
+        function showTrickCard(cardId) {
+            SoundFX.playClick();
+            
+            // Hide all cards
+            document.querySelectorAll('.trick-card').forEach(card => card.classList.add('hidden'));
+            
+            // Show target
+            document.getElementById(cardId).classList.remove('hidden');
+
+            // Style selector sidebar buttons dynamically based on cardId
+            document.querySelectorAll('.trick-selector').forEach((btn) => {
+                if (btn.getAttribute('onclick').includes(cardId)) {
+                    btn.className = "trick-selector w-full text-left p-2.5 bg-amber-300 border-2 border-slate-900 rounded-xl font-black text-xs flex justify-between items-center transition-all shadow-sm";
+                } else {
+                    btn.className = "trick-selector w-full text-left p-2.5 bg-white border border-slate-200 text-slate-500 hover:border-slate-400 rounded-xl font-bold text-xs flex justify-between items-center transition-all";
+                }
+            });
+        }
+
+        // --- SUBSECTION 3: VISUAL GRID BUILDER ---
+        function updateVisualGrid() {
+            const rowSliderVal = parseInt(document.getElementById('input-rows').value);
+            const colSliderVal = parseInt(document.getElementById('input-cols').value);
+
+            // Update slider text values
+            document.getElementById('slider-val-rows').textContent = `${rowSliderVal} Baris`;
+            document.getElementById('slider-val-cols').textContent = `${colSliderVal} Butir`;
+
+            // Build logic string
+            let sumArr = [];
+            for (let i = 0; i < rowSliderVal; i++) {
+                sumArr.push(colSliderVal);
+            }
+            const additionString = sumArr.join(" + ");
+            const totalVal = rowSliderVal * colSliderVal;
+
+            document.getElementById('visual-formula-string').innerHTML = `${rowSliderVal} × ${colSliderVal} = ${additionString} = <span class="text-teal-600 font-extrabold">${totalVal}</span>`;
+            document.getElementById('visual-explainer-rows').textContent = rowSliderVal;
+            document.getElementById('visual-explainer-cols').textContent = colSliderVal;
+
+            // Generate Grid Dots / smileys
+            const dotGrid = document.getElementById('dots-grid-container');
+            dotGrid.innerHTML = "";
+            dotGrid.style.gridTemplateColumns = `repeat(${colSliderVal}, minmax(0, 1fr))`;
+
+            for (let r = 0; r < rowSliderVal; r++) {
+                for (let c = 0; c < colSliderVal; c++) {
+                    const dot = document.createElement('div');
+                    dot.className = "w-8 h-8 rounded-full border border-slate-800 bg-amber-300 flex items-center justify-center text-base animate-bounce-slow shadow-sm";
+                    dot.textContent = "😊";
+                    dotGrid.appendChild(dot);
+                }
+            }
+        }
+
+        // --- SUBSECTION 4: GAMEPLAY CONTROLLER ---
+        function generateGameQuestions(level) {
+            const tableGroups = {
+                1: [1, 2, 5, 10],
+                2: [3, 4, 6],
+                3: [7, 8, 9]
+            };
+            const pools = tableGroups[level] || [1, 2, 5, 10];
+
+            let rawQuestions = [];
+            // Generate cross table permutations
+            pools.forEach(num => {
+                for (let factor = 1; factor <= 10; factor++) {
+                    rawQuestions.push({ num, factor });
+                }
+            });
+
+            // Fisher-Yates Shuffle
+            for (let i = rawQuestions.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                let temp = rawQuestions[i];
+                rawQuestions[i] = rawQuestions[j];
+                rawQuestions[j] = temp;
+            }
+
+            // Slice out exactly 10 questions
+            return rawQuestions.slice(0, 10).map((q, qIdx) => {
+                const aVal = q.num;
+                const bVal = q.factor;
+                const correctAnswer = aVal * bVal;
+
+                // Gather 3 wrong plausible choice alternatives
+                let possibleWrongAnswers = new Set();
+                while (possibleWrongAnswers.size < 3) {
+                    let randomWrong = (aVal + (Math.floor(Math.random() * 3) - 1)) * (bVal + (Math.floor(Math.random() * 3) - 1));
+                    if (randomWrong !== correctAnswer && randomWrong > 0) {
+                        possibleWrongAnswers.add(randomWrong);
+                    } else {
+                        possibleWrongAnswers.add(correctAnswer + (Math.random() > 0.5 ? 5 : -5));
+                    }
+                }
+
+                // Compile option choices and shuffle them
+                let choices = [
+                    { text: correctAnswer.toString(), isCorrect: true },
+                    ...Array.from(possibleWrongAnswers).map(v => ({ text: v.toString(), isCorrect: false }))
+                ];
+
+                // Shuffle choice options
+                for (let k = choices.length - 1; k > 0; k--) {
+                    const l = Math.floor(Math.random() * (k + 1));
+                    let tempC = choices[k];
+                    choices[k] = choices[l];
+                    choices[l] = tempC;
+                }
+
+                return {
+                    id: qIdx + 1,
+                    aVal,
+                    bVal,
+                    correctAnswer,
+                    choices
+                };
+            });
+        }
+
+        function startGame(level) {
+            SoundFX.playSuccess();
+            activeGameLevel = level;
+            activeGameIdx = 0;
+            activeGameAttempts = 0;
+            gameCorrectCount = 0;
+
+            activeGameQuestions = generateGameQuestions(level);
+
+            // Display elements
+            document.getElementById('game-setup-box').classList.add('hidden');
+            document.getElementById('game-graduation-box').classList.add('hidden');
+            document.getElementById('game-play-box').classList.remove('hidden');
+
+            const levelNames = { 1: "Level 1 (Mudah)", 2: "Level 2 (Normal)", 3: "Level 3 (Sulit)" };
+            document.getElementById('game-level-badge').textContent = levelNames[level];
+
+            loadGameQuestion(0);
+        }
+
+        function loadGameQuestion(idx) {
+            activeGameAttempts = 0;
+            document.getElementById('game-q-num').textContent = idx + 1;
+            document.getElementById('game-btn-next').classList.add('hidden');
+            document.getElementById('game-feedback-text').innerHTML = "";
+
+            const q = activeGameQuestions[idx];
+            document.getElementById('game-question-string').innerHTML = `${q.aVal} × ${q.bVal} = <span class="text-teal-600">...</span>`;
+
+            const container = document.getElementById('game-choices-grid');
+            container.innerHTML = "";
+
+            const colors = [
+                "bg-sky-100 hover:bg-sky-200 border-sky-400 text-sky-800",
+                "bg-pink-100 hover:bg-pink-200 border-pink-400 text-pink-800",
+                "bg-amber-100 hover:bg-amber-200 border-amber-400 text-amber-800",
+                "bg-emerald-100 hover:bg-emerald-200 border-emerald-400 text-emerald-800"
+            ];
+
+            q.choices.forEach((choice, cIdx) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3.5 rounded-2xl border-2 font-black text-sm sm:text-base comic-shadow-sm comic-btn-active transition-all ${colors[cIdx % colors.length]}`;
+                btn.innerHTML = `<span><span class="text-indigo-950 bg-white/70 border border-slate-300 w-5 h-5 rounded inline-flex items-center justify-center mr-2 font-black text-xs">${String.fromCharCode(65 + cIdx)}</span> ${choice.text}</span>`;
+                btn.onclick = () => selectGameAnswer(btn, choice.isCorrect);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectGameAnswer(clickedButton, isCorrect) {
+            activeGameAttempts++;
+            const q = activeGameQuestions[activeGameIdx];
+
+            if (isCorrect) {
+                SoundFX.playSuccess();
+                
+                // Block other button options
+                const container = document.getElementById('game-choices-grid');
+                Array.from(container.children).forEach(btn => {
+                    btn.disabled = true;
+                    btn.classList.add('opacity-40');
+                });
+
+                clickedButton.classList.remove('opacity-40');
+                clickedButton.className = "w-full text-left p-3.5 rounded-2xl border-2 font-black text-sm sm:text-base bg-emerald-200 border-emerald-500 text-emerald-800";
+                clickedButton.innerHTML += ` <span class="float-right text-emerald-600"><i class="fa-solid fa-circle-check"></i> BENAR!</span>`;
+
+                // Calculate incremental scores
+                if (activeGameAttempts === 1) {
+                    activeScore += 100;
+                    gameCorrectCount++;
+                    showToast("✨ Sempurna! Langsung benar pada percobaan pertama! +100 XP", "bg-emerald-500");
+                } else {
+                    activeScore += 50;
+                    showToast("🌟 Kegigihan Hebat! Kamu pantang menyerah! +50 XP", "bg-teal-500");
+                }
+
+                // Update scoreboard HUD
+                document.getElementById('hud-score').innerHTML = `<span class="text-base">⭐</span> ${activeScore} Poin`;
+                document.getElementById('game-feedback-text').innerHTML = `<span class="text-emerald-600">🎯 Keren! ${q.aVal} × ${q.bVal} adalah ${q.correctAnswer}</span>`;
+
+                triggerConfetti();
+
+                // Show Next question transition trigger
+                document.getElementById('game-btn-next').classList.remove('hidden');
+
+            } else {
+                SoundFX.playWrong();
+                
+                // Disable option as retry phase is triggered
+                clickedButton.disabled = true;
+                clickedButton.className = "w-full text-left p-3.5 rounded-2xl border-2 font-black text-sm sm:text-base bg-red-100 border-red-300 text-red-500 opacity-60 cursor-not-allowed";
+                clickedButton.innerHTML += ` <span class="float-right text-red-500"><i class="fa-solid fa-circle-xmark"></i> Salah!</span>`;
+
+                showToast("💡 Belum Tepat! Yuk coba hitung cakar kembali atau coba tebak opsi lain!", "bg-pink-400");
+            }
+        }
+
+        function nextGameQuestion() {
+            SoundFX.playClick();
+            if (activeGameIdx + 1 < activeGameQuestions.length) {
+                activeGameIdx++;
+                loadGameQuestion(activeGameIdx);
+            } else {
+                finishGame();
+            }
+        }
+
+        function finishGame() {
+            SoundFX.playFanfare();
+            document.getElementById('game-play-box').classList.add('hidden');
+            document.getElementById('game-graduation-box').classList.remove('hidden');
+
+            document.getElementById('game-final-correct').textContent = `${gameCorrectCount} / 10`;
+            document.getElementById('game-final-score').textContent = `${activeScore} Poin`;
+
+            triggerConfetti();
+        }
+
+        // --- SUBSECTION 5: NOTIFIER AND CONFETTI SYSTEM ---
+        function showToast(text, bgClass) {
+            const toast = document.getElementById('toast');
+            const toastText = document.getElementById('toast-text');
+            toast.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 text-white font-black px-5 py-3 rounded-2xl shadow-xl flex items-center gap-2 animate-bounce ${bgClass}`;
+            toastText.innerText = text;
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        const confettiCanvas = document.getElementById('confetti');
+        const confettiCtx = confettiCanvas.getContext('2d');
+
+        function triggerConfetti() {
+            confettiActive = true;
+            confettiCanvas.classList.remove('hidden');
+            confettiCanvas.width = window.innerWidth;
+            confettiCanvas.height = window.innerHeight;
+            
+            particles = [];
+            for (let i = 0; i < 90; i++) {
+                particles.push({
+                    x: Math.random() * confettiCanvas.width,
+                    y: Math.random() * confettiCanvas.height - confettiCanvas.height,
+                    r: Math.random() * 5 + 4,
+                    d: Math.random() * confettiCanvas.height,
+                    color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+                    tilt: Math.random() * 10 - 5,
+                    tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                    tiltAngle: 0
+                });
+            }
+
+            animateConfetti();
+            setTimeout(() => {
+                confettiActive = false;
+                confettiCanvas.classList.add('hidden');
+            }, 2500);
+        }
+
+        function animateConfetti() {
+            if (!confettiActive) return;
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+            
+            particles.forEach((p, idx) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle);
+                p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                confettiCtx.beginPath();
+                confettiCtx.lineWidth = p.r;
+                confettiCtx.strokeStyle = p.color;
+                confettiCtx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                confettiCtx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                confettiCtx.stroke();
+            });
+
+            requestAnimationFrame(animateConfetti);
+        }
+
+        window.onload = function() {
+            SoundFX.init();
+        }
+    </script>
+</body>
+</html>
