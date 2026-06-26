@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Perkalian Bersusun - Kurikulum Merdeka</title>
+    <style>
+        :root {
+            --primary: #ff769f;
+            --primary-dark: #e0527f;
+            --secondary: #6c5ce7;
+            --background: #fff5f7;
+            --card-bg: #ffffff;
+            --text: #2d3436;
+            --success: #1dd1a1;
+            --accent: #feca57;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Ubuntu', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 30px rgba(255, 118, 159, 0.15);
+            margin: 20px padding: 30px;
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 4px solid #ffe0e6;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px dashed #ffcbd7;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .title-badge {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .page-indicator {
+            font-size: 16px;
+            color: var(--secondary);
+            font-weight: bold;
+            background: #eee9fc;
+            padding: 5px 15px;
+            border-radius: 15px;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out forwards;
+            flex-grow: 1;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-dark);
+            margin-top: 0;
+        }
+
+        p {
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary), #ff9eb5);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 118, 159, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(255, 118, 159, 0.5);
+        }
+
+        .btn-secondary {
+            background: #dfe6e9;
+            color: #636e72;
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background: #b2bec3;
+            color: white;
+            box-shadow: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 3px dashed #ffcbd7;
+        }
+
+        .illustration {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Interactive Grid for Multiplications */
+        .math-grid {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 28px;
+            font-weight: bold;
+            margin: 20px auto;
+            width: fit-content;
+            text-align: right;
+            letter-spacing: 10px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .math-line {
+            border-bottom: 4px solid var(--text);
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-right: 10px;
+            position: relative;
+        }
+
+        .math-sign {
+            position: absolute;
+            left: -25px;
+            bottom: -5px;
+        }
+
+        .interactive-box {
+            background: #fff0f3;
+            border: 2px dashed var(--primary);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 15px 0;
+        }
+
+        .input-answer {
+            width: 60px;
+            font-size: 20px;
+            text-align: center;
+            border: 3px solid var(--secondary);
+            border-radius: 8px;
+            padding: 5px;
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .input-answer:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff0f3;
+        }
+
+        .feedback {
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .correct { color: var(--success); }
+        .wrong { color: #d63031; }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: #eee;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 3%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .character-bubble {
+            background: #f1f2f6;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 15px 0;
+            position: relative;
+            border-left: 5px solid var(--primary);
+        }
+
+        .grid-3d {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card-3d {
+            background: #fff;
+            border: 3px solid #f1f2f6;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 0 #e1e2e6;
+            transition: transform 0.1s;
+            cursor: pointer;
+        }
+
+        .card-3d:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .highlight {
+            color: var(--primary-dark);
+            font-weight: bold;
+            background: #ffe3ec;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container" style="margin: 40px auto; padding: 30px;">
+    <!-- Top Header info -->
+    <div class="header">
+        <div class="title-badge">🌸 Matematika Ceria - Kurikulum Merdeka</div>
+        <div class="page-indicator" id="pageNumber">Halaman 1 / 35</div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- 35 Pages of Content dynamically defined -->
+    <div id="slides-wrapper">
+
+        <!-- PAGE 1: JUDUL UTAMA -->
+        <div class="slide active" id="slide-1">
+            <div class="illustration">
+                <svg width="180" height="180" viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ff769f;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6c5ce7;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <circle cx="50" cy="50" r="40" fill="url(#grad1)" />
+                    <text x="50" y="58" font-family="sans-serif" font-size="32" fill="white" text-anchor="middle" font-weight="bold">×</text>
+                </svg>
+            </div>
+            <h1 style="text-align: center; font-size: 28px;">Petualangan Seru Perkalian Bersusun!</h1>
+            <p style="text-align: center; font-size: 18px; color: #636e72;">
+                Halo Teman Seperjuangan Kelas 3! Bersiaplah naik ke Kelas 4 dengan skill matematika barumu yang super keren! ✨
+            </p>
+            <div class="character-bubble">
+                <strong>🤖 Kak Pio:</strong> "Hai Sahabat Pintar! Namaku Pio. Aku akan menemanimu berpetualang melewati 35 halaman seru untuk menguasai rahasia perkalian kilat!"
+            </div>
+        </div>
+
+        <!-- PAGE 2: TUJUAN PEMBELAJARAN -->
+        <div class="slide" id="slide-2">
+            <h2>🎯 Misi Rahasiamu Hari Ini</h2>
+            <p>Di akhir petualangan ini, kamu akan menjadi <strong>Ratu Perkalian</strong> yang hebat dengan kemampuan:</p>
+            <div class="interactive-box">
+                <ul>
+                    <li>Mengerti bagaimana perkalian satuan bisa berkumpul menjadi puluhan.</li>
+                    <li>Menyelesaikan perkalian bersusun tanpa bingung nilai tempat.</li>
+                    <li>Membantu menyelesaikan masalah sehari-hari menggunakan trik bersusun cepat!</li>
+                </ul>
+            </div>
+            <p>Sesuai dengan <strong>Kurikulum Merdeka Kelas 3 & 4</strong>, kita akan belajar dengan visual yang asyik!</p>
+        </div>
+
+        <!-- PAGE 3: WARM-UP (PENGUATAN KONSEP DASAR) -->
+        <div class="slide" id="slide-3">
+            <h2>🔥 Pemanasan: Ingatkah Kamu?</h2>
+            <p>Sebelum kita mulai susun-menyusun, yuk segarkan ingatanmu tentang perkalian dasar 1 sampai 10.</p>
+            <div class="character-bubble">
+                Perkalian sebenarnya adalah <strong>penjumlahan yang berulang</strong>!
+            </div>
+            <div class="interactive-box" style="text-align: center;">
+                <p style="font-size: 22px;">3 × 4 artinya...</p>
+                <p style="font-size: 24px; color: var(--secondary); font-weight: bold;">4 + 4 + 4 = 12</p>
+            </div>
+        </div>
+
+        <!-- PAGE 4: INTERACTIVE WARM-UP QUIZ 1 -->
+        <div class="slide" id="slide-4">
+            <h2>🧩 Kuis Pemanasan Kilat 1</h2>
+            <p>Yuk, jawab untuk membuka kunci gerbang petualangan berikutnya!</p>
+            <div class="interactive-box">
+                <p style="font-size: 20px;">Berapakah hasil dari <strong>5 × 6</strong>?</p>
+                <input type="number" id="q4" class="input-answer">
+                <button class="btn" onclick="checkAns('q4', 30, 'ans4')">Cek</button>
+                <div id="ans4" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: INTERACTIVE WARM-UP QUIZ 2 -->
+        <div class="slide" id="slide-5">
+            <h2>🧩 Kuis Pemanasan Kilat 2</h2>
+            <p>Satu lagi ya, biar makin mantap!</p>
+            <div class="interactive-box">
+                <p style="font-size: 20px;">Berapakah hasil dari <strong>7 × 4</strong>?</p>
+                <input type="number" id="q5" class="input-answer">
+                <button class="btn" onclick="checkAns('q5', 28, 'ans5')">Cek</button>
+                <div id="ans5" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: REAL-WORLD CONNECTION -->
+        <div class="slide" id="slide-6">
+            <h2>🛍️ Cerita di Toko Kue Kak Syifa</h2>
+            <p>Bayangkan kamu sedang membantu Kak Syifa membungkus kue donat untuk pesta ulang tahun.</p>
+            <div class="illustration">
+                <svg width="150" height="100" viewBox="0 0 100 60">
+                    <ellipse cx="30" cy="30" rx="15" ry="10" fill="#feca57" stroke="#ff9f43" stroke-width="2"/>
+                    <ellipse cx="30" cy="30" rx="5" ry="3" fill="white"/>
+                    <ellipse cx="70" cy="30" rx="15" ry="10" fill="#ff9ff3" stroke="#f368e0" stroke-width="2"/>
+                    <ellipse cx="70" cy="30" rx="5" ry="3" fill="white"/>
+                </svg>
+            </div>
+            <p>Ada 3 kotak besar. Setiap kotak berisi <strong>12 donat manis</strong>. Berapa total seluruh donat?</p>
+            <div class="character-bubble">
+                Bisa dihitung dengan 12 + 12 + 12. Tapi kalau kotaknya ada 25? Penjumlahan biasa pasti melelahkan! Di sinilah <strong>Perkalian Bersusun</strong> datang menyelamatkan kita!
+            </div>
+        </div>
+
+        <!-- PAGE 7: PENGENALAN KONSEP BERSUSUN -->
+        <div class="slide" id="slide-7">
+            <h2>🏗️ Apa itu Perkalian Bersusun?</h2>
+            <p>Perkalian bersusun adalah cara rahasia memecah angka besar menjadi potongan kecil yang mudah dihitung.</p>
+            <p>Mari kita bedah angka <span class="highlight">12</span>:</p>
+            <ul>
+                <li>1 adalah <strong>Puluhan</strong> (nilainya 10)</li>
+                <li>2 adalah <strong>Satuan</strong> (nilainya 2)</li>
+            </ul>
+            <p>Kita akan mengalikan masing-masing nilai tempat ini dengan angka pengali!</p>
+        </div>
+
+        <!-- PAGE 8: MATERI STRUKTUR PENULISAN -->
+        <div class="slide" id="slide-8">
+            <h2>✏️ Cara Menulis Bersusun yang Benar</h2>
+            <p>Agar tidak tertukar, posisi angka puluhan dan satuan harus lurus tegak lurus!</p>
+            <div class="math-grid">
+                12<br>
+                3<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+            </div>
+            <p style="text-align: center; color: var(--secondary);">Angka 3 lurus di bawah angka 2 karena sama-sama satuan!</p>
+        </div>
+
+        <!-- PAGE 9: LANGKAH 1 - KALIKAN SATUAN -->
+        <div class="slide" id="slide-9">
+            <h2>✨ Langkah 1: Pesta Satuan</h2>
+            <p>Langkah pertama selalu dimulai dari yang paling belakang (Satuan).</p>
+            <div class="math-grid">
+                1<span style="color:var(--primary-dark)">2</span><br>
+                <span style="color:var(--primary-dark)">3</span><br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                <span style="color:var(--primary-dark)">6</span>
+            </div>
+            <p>Kita hitung: <span class="highlight">2 × 3 = 6</span>. Tulis angka 6 tepat di bawah garis satuan!</p>
+        </div>
+
+        <!-- PAGE 10: LANGKAH 2 - KALIKAN PULUHAN -->
+        <div class="slide" id="slide-10">
+            <h2>🚀 Langkah 2: Giliran Puluhan</h2>
+            <p>Setelah satuan selesai, sekarang kita kalikan angka bawah dengan angka puluhan di atasnya.</p>
+            <div class="math-grid">
+                <span style="color:var(--secondary)">1</span>2<br>
+                <span style="color:var(--secondary)">3</span><br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                <span style="color:var(--secondary)">3</span>6
+            </div>
+            <p>Kita hitung: <span class="highlight">1 × 3 = 3</span>. Tulis angka 3 di depan angka 6 (di tempat puluhan).</p>
+            <p>Jadi, 12 × 3 = <strong>36</strong>!</p>
+        </div>
+
+        <!-- PAGE 11: CONTOH SOAL MANDIRI 1 -->
+        <div class="slide" id="slide-11">
+            <h2>🎒 Mari Mencoba: Contoh Soal 1</h2>
+            <p>Coba hitung perlahan di kertasmu: <strong>21 × 4</strong></p>
+            <div class="math-grid">
+                21<br>
+                4<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+            </div>
+            <div class="interactive-box">
+                Isi jawaban akhirmu di sini: 
+                <input type="number" id="q11" class="input-answer" style="width: 100px;">
+                <button class="btn" onclick="checkAns('q11', 84, 'ans11')">Cek Jawaban</button>
+                <div id="ans11" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 12: PEMBAHASAN CONTOH SOAL 1 -->
+        <div class="slide" id="slide-12">
+            <h2>🔍 Pembahasan Detail Soal 21 × 4</h2>
+            <div class="character-bubble">
+                <ul>
+                    <li><strong>Satuan:</strong> 1 × 4 = 4. Tulis 4 di belakang.</li>
+                    <li><strong>Puluhan:</strong> 2 × 4 = 8. Tulis 8 di depan.</li>
+                    <li>Hasil gabungannya menjadi <strong>84</strong>!</li>
+                </ul>
+            </div>
+            <p>Hebat! Kamu sudah paham dasar perkalian tanpa menyimpan.</p>
+        </div>
+
+        <!-- PAGE 13: KONSEP BARU - TEKNIK MENYIMPAN -->
+        <div class="slide" id="slide-13">
+            <h2>🦄 Level Up: Teknik Menyimpan yang Ajaib</h2>
+            <p>Bagaimana jika hasil perkalian satuannya lebih dari 9? Misalnya 14 × 4?</p>
+            <p>Langkah satuan: 4 × 4 = <strong>16</strong>. Angka 16 tidak muat ditulis semua di bawah satuan.</p>
+            <div class="character-bubble">
+                "Caranya: Tulis angka satuannya (<span class="highlight">6</span>) di bawah, lalu simpan angka puluhannya (<span class="highlight">1</span>) di atas kepala puluhan teman sebelahnya!"
+            </div>
+        </div>
+
+        <!-- PAGE 14: LANGKAH DETAIL TEKNIK MENYIMPAN -->
+        <div class="slide" id="slide-14">
+            <h2>📸 Visualisasi Teknik Menyimpan (14 × 4)</h2>
+            <div class="math-grid">
+                <span style="font-size:16px; color:var(--primary-dark); vertical-align:super;">(1)</span><br>
+                14<br>
+                4<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                6
+            </div>
+            <p>Lihat angka 1 kecil di atas? Itu adalah tabungan kita yang disimpan!</p>
+        </div>
+
+        <!-- PAGE 15: MENYELESAIKAN TEKNIK MENYIMPAN -->
+        <div class="slide" id="slide-15">
+            <h2>kunci Sukses: Tambahkan Tabunganmu!</h2>
+            <p>Sekarang kalikan puluhannya: 1 × 4 = 4.</p>
+            <p>Jangan lupa tambahkan angka tabungan yang disimpan tadi: 4 + <span class="highlight">1</span> = <strong>5</strong>.</p>
+            <div class="math-grid">
+                56
+            </div>
+            <p>Jadi, hasil akhir dari 14 × 4 adalah <strong>56</strong>!</p>
+        </div>
+
+        <!-- PAGE 16: LATIHAN INTERAKTIF MENYIMPAN 1 -->
+        <div class="slide" id="slide-16">
+            <h2>✏️ Latihan Bersama Pio 1</h2>
+            <p>Mari uji kekuatan simpanmu! Hitunglah: <strong>16 × 3</strong></p>
+            <p>Petunjuk: 6 × 3 = 18 (tulis 8, simpan 1). Lalu 1 × 3 = 3, tambahkan simpanan.</p>
+            <div class="interactive-box">
+                Hasil akhirnya adalah: 
+                <input type="number" id="q16" class="input-answer" style="width:100px;">
+                <button class="btn" onclick="checkAns('q16', 48, 'ans16')">Cek</button>
+                <div id="ans16" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 17: LATIHAN INTERAKTIF MENYIMPAN 2 -->
+        <div class="slide" id="slide-17">
+            <h2>✏️ Latihan Bersama Pio 2</h2>
+            <p>Hitunglah dengan teliti: <strong>25 × 3</strong></p>
+            <div class="interactive-box">
+                Jawabanmu: 
+                <input type="number" id="q17" class="input-answer" style="width:100px;">
+                <button class="btn" onclick="checkAns('q17', 75, 'ans17')">Cek</button>
+                <div id="ans17" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 18: TANTANGAN PULUHAN LEBIH BESAR -->
+        <div class="slide" id="slide-18">
+            <h2>🏆 Tantangan Naik Kelas: Puluhan Lebih Besar</h2>
+            <p>Mari mencoba angka puluhan yang lebih besar, seperti <strong>42 × 5</strong>.</p>
+            <p>Caranya sama persis! Jangan takut dengan angka yang besar ya.</p>
+            <ul>
+                <li>2 × 5 = 10 (tulis 0, simpan 1)</li>
+                <li>4 × 5 = 20. Ditambah simpanan 1 = 21</li>
+                <li>Hasilnya langsung ditulis semua di depan: <strong>210</strong></li>
+            </ul>
+        </div>
+
+        <!-- PAGE 19: KUIS INTERAKTIF ANGKA BESAR -->
+        <div class="slide" id="slide-19">
+            <h2>⭐ Kuis Bintang Angka Besar</h2>
+            <p>Hitunglah hasil dari: <strong>35 × 4</strong></p>
+            <div class="interactive-box">
+                Masukkan jawabanmu: 
+                <input type="number" id="q19" class="input-answer" style="width:100px;">
+                <button class="btn" onclick="checkAns('q19', 140, 'ans19')">Periksa</button>
+                <div id="ans19" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 20: BREAK TIME - FUN FACTS -->
+        <div class="slide" id="slide-20">
+            <h2>🌸 Istirahat Sejenak: Fakta Seru Matematika</h2>
+            <p>Tahukah kamu? Angka berapapun jika dikalikan dengan <strong>0</strong> hasilnya selalu <strong>0</strong>!</p>
+            <div class="interactive-box" style="text-align: center; background: #e3faf2;">
+                <p style="font-size: 22px; color: var(--success);">99 × 0 = 0</p>
+                <p style="font-size: 22px; color: var(--success);">1.000 × 0 = 0</p>
+            </div>
+            <p>Wah, angka 0 sangat kuat ya, bisa merubah angka raksasa menjadi nol dalam sekejap!</p>
+        </div>
+
+        <!-- PAGE 21: REAL-WORLD PROBLEM BERBENTUK CERITA -->
+        <div class="slide" id="slide-21">
+            <h2>Jeep Petualangan: Soal Cerita Seru</h2>
+            <p>Nabila mengumpulkan jepit rambut lucu. Ia menaruhnya ke dalam 6 kotak. Setiap kotak berisi 15 jepit rambut.</p>
+            <p>Berapa banyak jepit rambut Nabila seluruhnya?</p>
+            <div class="interactive-box">
+                Bentuk perkaliannya: 15 × 6 = 
+                <input type="number" id="q21" class="input-answer" style="width:100px;">
+                <button class="btn" onclick="checkAns('q21', 90, 'ans21')">Cek Hasil</button>
+                <div id="ans21" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 22: PEMBAHASAN SOAL NABILA -->
+        <div class="slide" id="slide-22">
+            <h2>💖 Analisis Jawaban Jepit Rambut</h2>
+            <p>Mari kita susun:</p>
+            <div class="math-grid">
+                15<br>
+                6<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                90
+            </div>
+            <p>5 × 6 = 30 (tulis 0, simpan 3). 1 × 6 = 6 + 3 = 9. Totalnya <strong>90 jepit rambut</strong>. Luar biasa tangguh!</p>
+        </div>
+
+        <!-- PAGE 23: LATIHAN MANDIRI - LEVEL 1 -->
+        <div class="slide" id="slide-23">
+            <h2>🏃 Tantangan Mandiri - Level Hijau</h2>
+            <p>Kerjakan soal berikut tanpa bantuan: <strong>13 × 3</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q23" class="input-answer">
+                <button class="btn" onclick="checkAns('q23', 39, 'ans23')">Selesai</button>
+                <div id="ans23" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 24: LATIHAN MANDIRI - LEVEL 2 -->
+        <div class="slide" id="slide-24">
+            <h2>🏃 Tantangan Mandiri - Level Kuning</h2>
+            <p>Kerjakan soal berikut: <strong>24 × 2</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q24" class="input-answer">
+                <button class="btn" onclick="checkAns('q24', 48, 'ans24')">Selesai</button>
+                <div id="ans24" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 25: LATIHAN MANDIRI - LEVEL MERAH -->
+        <div class="slide" id="slide-25">
+            <h2>🏃 Tantangan Mandiri - Level Merah</h2>
+            <p>Wah, yang ini butuh teknik menyimpan! <strong>18 × 4</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q25" class="input-answer">
+                <button class="btn" onclick="checkAns('q25', 72, 'ans25')">Selesai</button>
+                <div id="ans25" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 26: GAME DETEKTIF MATEMATIKA -->
+        <div class="slide" id="slide-26">
+            <h2>🕵️ Detektif Matematika: Cari Angka Hilang!</h2>
+            <p>Ada angka yang terhapus noda cokelat! Bantu temukan angka satuan yang hilang:</p>
+            <div class="math-grid">
+                2 ?<br>
+                3<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                69
+            </div>
+            <div class="interactive-box">
+                Berapakah angka yang tepat untuk mengganti tanda tanya (?) tersebut?
+                <input type="number" id="q26" class="input-answer">
+                <button class="btn" onclick="checkAns('q26', 3, 'ans26')">Tebak</button>
+                <div id="ans26" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 27: TIP SUPER CEPAT BERSUSUN -->
+        <div class="slide" id="slide-27">
+            <h2>💡 Tips Rahasia Juara Kelas</h2>
+            <div class="character-bubble">
+                "Selalu buat coretan kecil untuk angka yang kamu simpan agar tidak terlupa saat menjumlahkan di langkah terakhir!"
+            </div>
+            <p>Kedisiplinan menulis letak angka puluhan dan satuan sejajar adalah kunci 100% jawaban benar!</p>
+        </div>
+
+        <!-- PAGE 28: KUIS FINAL UTAMA - SOAL 1 -->
+        <div class="slide" id="slide-28">
+            <h2>🎓 Ujian Final Kelulusan Perkalian (1/5)</h2>
+            <p>Hitunglah dengan saksama: <strong>31 × 5</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q28" class="input-answer">
+                <button class="btn" onclick="checkAns('q28', 155, 'ans28')">Kunci Jawaban</button>
+                <div id="ans28" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 29: KUIS FINAL UTAMA - SOAL 2 -->
+        <div class="slide" id="slide-29">
+            <h2>🎓 Ujian Final Kelulusan Perkalian (2/5)</h2>
+            <p>Hitunglah dengan saksama: <strong>12 × 7</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q29" class="input-answer">
+                <button class="btn" onclick="checkAns('q29', 84, 'ans29')">Kunci Jawaban</button>
+                <div id="ans29" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 30: KUIS FINAL UTAMA - SOAL 3 -->
+        <div class="slide" id="slide-30">
+            <h2>🎓 Ujian Final Kelulusan Perkalian (3/5)</h2>
+            <p>Hitunglah dengan saksama: <strong>45 × 2</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q30" class="input-answer">
+                <button class="btn" onclick="checkAns('q30', 90, 'ans30')">Kunci Jawaban</button>
+                <div id="ans30" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 31: KUIS FINAL UTAMA - SOAL 4 -->
+        <div class="slide" id="slide-31">
+            <h2>🎓 Ujian Final Kelulusan Perkalian (4/5)</h2>
+            <p>Hitunglah dengan saksama: <strong>23 × 4</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q31" class="input-answer">
+                <button class="btn" onclick="checkAns('q31', 92, 'ans31')">Kunci Jawaban</button>
+                <div id="ans31" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 32: KUIS FINAL UTAMA - SOAL 5 -->
+        <div class="slide" id="slide-32">
+            <h2>🎓 Ujian Final Kelulusan Perkalian (5/5)</h2>
+            <p>Soal terakhir untuk mahkota emas! <strong>54 × 3</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q32" class="input-answer">
+                <button class="btn" onclick="checkAns('q32', 162, 'ans32')">Kunci Jawaban</button>
+                <div id="ans32" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 33: JURNAL REFLEKSI -->
+        <div class="slide" id="slide-33">
+            <h2>Thoughts Jurnal Refleksi Diri</h2>
+            <p>Bagaimana perasaanmu setelah mempelajari perkalian bersusun hari ini?</p>
+            <div class="grid-3d">
+                <div class="card-3d" onclick="alert('Luar biasa! Kamu adalah bintang!')">😊 Easy & Seru!</div>
+                <div class="card-3d" onclick="alert('Hebat, terus berlatih pasti makin lancar!')">😐 Sedang-sedang</div>
+                <div class="card-3d" onclick="alert('Tidak apa-apa, kamu bisa ulangi lagi halaman petualangan ini kapan saja!')">😢 Butuh Review</div>
+            </div>
+            <p style="font-size: 14px; text-align: center; color: #7f8c8d;">(Pilih salah satu ekspresi di atas dengan mengekliknya)</p>
+        </div>
+
+        <!-- PAGE 34: KESIMPULAN BELAJAR -->
+        <div class="slide" id="slide-34">
+            <h2>📚 Rangkuman Cantik Hari Ini</h2>
+            <div class="interactive-box" style="background-color: #f7f1e3;">
+                <p>Kita telah menguasai rahasia besar:</p>
+                <ol>
+                    <li>Menyusun angka puluhan lurus dengan puluhan, satuan dengan satuan.</li>
+                    <li>Mengalikan dari baris belakang (satuan) baru kemudian baris depan (puluhan).</li>
+                    <li>Menyimpan sisa angka di atas kepala teman jika hasilnya melebihi 9.</li>
+                </ol>
+            </div>
+            <p>Kini kamu sudah siap menyambut materi matematika Kelas 4 dengan senyuman terbaik!</p>
+        </div>
+
+        <!-- PAGE 35: SELESAI & SERTIFIKAT SELESAI -->
+        <div class="slide" id="slide-35">
+            <div style="text-align: center;">
+                <h1 style="color: var(--secondary); font-size: 32px;">👑 SELAMAT! 👑</h1>
+                <p style="font-size: 20px;">Kamu Telah Menyelesaikan 35 Halaman Petualangan Perkalian Bersusun!</p>
+                <div class="illustration">
+                    <svg width="200" height="200" viewBox="0 0 100 100">
+                        <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill="#feca57" stroke="#ff9f43" stroke-width="2"/>
+                    </svg>
+                </div>
+                <p>Kamu resmi mendapatkan gelar: <br><strong style="font-size: 24px; color: var(--primary-dark);">Master Perkalian Bersusun Jenius ✨</strong></p>
+                <button class="btn" onclick="window.location.reload();">Mulai Petualangan Baru</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation">
+        <button class="btn btn-secondary" id="prevBtn" onclick="changeSlide(-1)" disabled>Sebelumnya</button>
+        <button class="btn" id="nextBtn" onclick="changeSlide(1)">Berikutnya</button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 1;
+    const totalSlides = 35;
+
+    function updateUI() {
+        // Hide all slides
+        for (let i = 1; i <= totalSlides; i++) {
+            const slide = document.getElementById('slide-' + i);
+            if (slide) slide.classList.remove('active');
+        }
+        
+        // Show current slide
+        const activeSlide = document.getElementById('slide-' + currentSlide);
+        if (activeSlide) {
+            activeSlide.classList.add('active');
+        } else {
+            // Fallback content generators for dynamic intermediate repetitive steps if not hardcoded above
+            // To ensure full 35-page integrity without inflating source code text limit excessively, 
+            // we dynamically handle any missing slide IDs gracefully.
+            createDynamicSlide(currentSlide);
+        }
+
+        // Update indicators
+        document.getElementById('pageNumber').innerText = "Halaman " + currentSlide + " / " + totalSlides;
+        document.getElementById('progressBar').style.width = (currentSlide / totalSlides * 100) + "%";
+
+        // Enable/disable buttons
+        document.getElementById('prevBtn').disabled = (currentSlide === 1);
+        if (currentSlide === totalSlides) {
+            document.getElementById('nextBtn').innerText = "Selesai 🎉";
+            document.getElementById('nextBtn').disabled = true;
+        } else {
+            document.getElementById('nextBtn').innerText = "Berikutnya";
+            document.getElementById('nextBtn').disabled = false;
+        }
+    }
+
+    function changeSlide(direction) {
+        currentSlide += direction;
+        if (currentSlide < 1) currentSlide = 1;
+        if (currentSlide > totalSlides) currentSlide = totalSlides;
+        updateUI();
+    }
+
+    function checkAns(id, correctVal, feedbackId) {
+        const userAns = document.getElementById(id).value;
+        const fb = document.getElementById(feedbackId);
+        if (parseInt(userAns) === correctVal) {
+            fb.innerHTML = "✨ Hebat! Jawabanmu BENAR! 🎉";
+            fb.className = "feedback correct";
+        } else {
+            fb.innerHTML = "❌ Hmm, coba hitung kembali pelan-pelan ya sayang.";
+            fb.className = "feedback wrong";
+        }
+    }
+
+    function createDynamicSlide(num) {
+        // Dynamic generator to fill placeholder slides seamlessly with unique intermediate math contents
+        let wrapper = document.getElementById('slides-wrapper');
+        let existing = document.getElementById('slide-' + num);
+        if (!existing) {
+            let newSlide = document.createElement('div');
+            newSlide.id = 'slide-' + num;
+            newSlide.className = 'slide active';
+            
+            let val1 = 10 + (num % 5) * 4;
+            let val2 = 2 + (num % 4);
+            let correct = val1 * val2;
+
+            newSlide.innerHTML = `
+                <h2>✏️ Tantangan Berlatih: Halaman ${num}</h2>
+                <p>Yuk, asah terus kemampuan bersusunmu agar reflek berhitungmu secepat kilat!</p>
+                <div class="math-grid">
+                    ${val1}<br>
+                    ${val2}<br>
+                    <div class="math-line"><span class="math-sign">×</span></div>
+                </div>
+                <div class="interactive-box">
+                    Berapakah hasil dari <strong>${val1} × ${val2}</strong>? <br><br>
+                    <input type="number" id="q${num}" class="input-answer" style="width:120px;">
+                    <button class="btn" onclick="checkAns('q${num}', ${correct}, 'ans${num}')">Periksa</button>
+                    <div id="ans${num}" class="feedback"></div>
+                </div>
+            `;
+            wrapper.appendChild(newSlide);
+        } else {
+            existing.classList.add('active');
+        }
+    }
+</script>
+</body>
+</html>
