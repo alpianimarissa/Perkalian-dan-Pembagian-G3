@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Petualangan Perkalian Bersusun Ajaib - Kastel Pio</title>
+    <!-- Tailwind CSS for high performance modern design tokens -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght=500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: #fff0f3;
+            background-image: radial-gradient(#ffe3e8 2px, transparent 2px);
+            background-size: 24px 24px;
+        }
+        .heading-font {
+            font-family: 'Fredoka One', cursive;
+        }
+        /* Custom scrollbar for beautiful styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #fff0f3;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff8fa3;
+            border-radius: 10px;
+        }
+        /* Shake animation for error state */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+        .shake-effect {
+            animation: shake 0.25s ease-in-out 2;
+        }
+        /* Sparkle float animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-8px) rotate(5deg); }
+        }
+        .floating-element {
+            animation: float 4s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between text-slate-800">
+
+    <!-- Top Header & Scoreboard -->
+    <header class="w-full bg-white shadow-sm border-b-4 border-pink-100 px-6 py-4 flex flex-wrap justify-between items-center gap-4">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-pink-100 rounded-2xl fill-pink-500 flex items-center justify-center text-2xl floating-element">
+                👑
+            </div>
+            <div>
+                <h1 class="heading-font text-xl md:text-2xl text-pink-600 tracking-wide">Kastel Perkalian Pio</h1>
+                <p class="text-xs text-slate-400 font-extrabold tracking-wider">KURIKULUM MERDEKA KELAS 3-4 SD • AUTO-ADVANCE</p>
+            </div>
+        </div>
+        
+        <!-- Score and Hearts -->
+        <div class="flex items-center gap-6">
+            <div class="bg-purple-100 px-4 py-2 rounded-2xl border-2 border-purple-200 flex items-center gap-2 shadow-sm">
+                <span class="text-lg">⭐</span>
+                <span class="font-bold text-purple-700 text-sm md:text-base">EXP: <span id="gameScore">0</span></span>
+            </div>
+            <div class="flex items-center gap-1 bg-red-50 px-4 py-2 rounded-2xl border-2 border-red-100 shadow-sm">
+                <span class="text-xs font-black text-red-500 mr-1 uppercase tracking-wider">Shield:</span>
+                <div id="heartContainer" class="flex gap-1">
+                    <span class="text-red-500 text-lg transition-transform hover:scale-125 cursor-default">❤️</span>
+                    <span class="text-red-500 text-lg transition-transform hover:scale-125 cursor-default">❤️</span>
+                    <span class="text-red-500 text-lg transition-transform hover:scale-125 cursor-default">❤️</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="max-w-5xl w-full mx-auto p-4 md:p-8 flex-grow grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Left Panel: Mode & Difficulty Selectors -->
+        <div class="lg:col-span-1 flex flex-col gap-6">
+            <!-- Mode Selection Card -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border-4 border-pink-100">
+                <h3 class="heading-font text-base text-purple-600 mb-4 flex items-center gap-2">
+                    🎮 PILIH CARA BERMAIN
+                </h3>
+                <div class="flex flex-col gap-3">
+                    <button id="modeGuidedBtn" onclick="setMode('guided')" class="w-full text-left p-4 rounded-2xl border-3 transition-all duration-200 bg-pink-50 border-pink-400 text-pink-700 shadow-sm font-bold">
+                        <div class="text-sm flex items-center gap-2 heading-font">🎯 PINDAH OTOMATIS</div>
+                        <div class="text-[11px] text-pink-600/80 font-semibold mt-1">Ketik jawabanmu langsung, kotak otomatis pindah jika jawaban benar!</div>
+                    </button>
+                    <button id="modeChallengeBtn" onclick="setMode('challenge')" class="w-full text-left p-4 rounded-2xl border-3 transition-all duration-200 bg-slate-50 border-slate-200 text-slate-600 font-bold hover:bg-slate-100">
+                        <div class="text-sm flex items-center gap-2 heading-font">⚡ TANTANGAN BEBAS</div>
+                        <div class="text-[11px] text-slate-500 font-semibold mt-1">Isi semua kotak secara bebas tanpa urutan, lalu periksa hasil akhir!</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Difficulty Card -->
+            <div class="bg-white rounded-3xl p-6 shadow-md border-4 border-pink-100">
+                <h3 class="heading-font text-base text-purple-600 mb-4 flex items-center gap-2">
+                    ✨ TINGKAT KESULITAN
+                </h3>
+                <div class="grid grid-cols-3 gap-2">
+                    <button id="diffEasy" onclick="setDifficulty('easy')" class="py-3 px-1 rounded-xl text-xs font-black text-center border-2 bg-emerald-50 border-emerald-300 text-emerald-700 hover:scale-105 transition-transform">
+                        🟢 MUDAH<br><span class="text-[9px] font-normal">No Carry</span>
+                    </button>
+                    <button id="diffMedium" onclick="setDifficulty('medium')" class="py-3 px-1 rounded-xl text-xs font-black text-center border-2 bg-slate-50 border-slate-200 text-slate-600 hover:scale-105 transition-transform">
+                        🟡 SEDANG<br><span class="text-[9px] font-normal">Carryover</span>
+                    </button>
+                    <button id="diffHard" onclick="setDifficulty('hard')" class="py-3 px-1 rounded-xl text-xs font-black text-center border-2 bg-slate-50 border-slate-200 text-slate-600 hover:scale-105 transition-transform">
+                        🔴 SULIT<br><span class="text-[9px] font-normal">Big Numbers</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Character Guide (Kak Pio) -->
+            <div class="bg-gradient-to-br from-pink-100 to-purple-100 rounded-3xl p-5 border-4 border-white shadow-md relative overflow-hidden flex items-center gap-4">
+                <div class="shrink-0">
+                    <!-- 3D-like Cute Mascot SVG -->
+                    <svg class="w-16 h-16 floating-element" viewBox="0 0 100 100">
+                        <defs>
+                            <radialGradient id="faceGrad" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#fff0f5"/>
+                                <stop offset="100%" stop-color="#ffb6c1"/>
+                            </radialGradient>
+                        </defs>
+                        <!-- Mascot Body -->
+                        <circle cx="50" cy="50" r="40" fill="url(#faceGrad)" stroke="#ff769f" stroke-width="3"/>
+                        <!-- Mascot Eyes -->
+                        <ellipse cx="38" cy="45" rx="5" ry="7" fill="#2d3436"/>
+                        <ellipse cx="62" cy="45" rx="5" ry="7" fill="#2d3436"/>
+                        <circle cx="36" cy="42" r="1.5" fill="white"/>
+                        <circle cx="60" cy="42" r="1.5" fill="white"/>
+                        <!-- Blush cheeks -->
+                        <circle cx="30" cy="55" r="5" fill="#ff769f" opacity="0.6"/>
+                        <circle cx="70" cy="55" r="5" fill="#ff769f" opacity="0.6"/>
+                        <!-- Mascot Smile -->
+                        <path d="M 44 56 Q 50 64 56 56" fill="none" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Princess Star Crown -->
+                        <polygon points="50,6 55,18 67,18 57,26 61,38 50,30 39,38 43,26 33,18 45,18" fill="#feca57" stroke="#ff9f43" stroke-width="1.5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h4 class="font-extrabold text-pink-700 text-xs tracking-wider heading-font">KAK PIO 🤖</h4>
+                    <p id="guideBubble" class="text-xs text-slate-600 mt-1 leading-relaxed">
+                        "Selamat datang kembali, adik pintar! Langsung ketikkan angka jawabanmu di dalam kotak bergaris biru ya. Sistem akan memindahkan kursor secara otomatis!"
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center & Right Panel: Dynamic Math Board -->
+        <div class="lg:col-span-2 flex flex-col gap-6">
+            <div id="mathBoard" class="bg-white rounded-3xl p-6 md:p-8 shadow-md border-4 border-pink-100 flex flex-col items-center relative overflow-hidden">
+                
+                <!-- Action Controls top of the board -->
+                <div class="w-full flex justify-between items-center mb-6">
+                    <span id="stepProgressIndicator" class="text-xs font-black text-pink-500 bg-pink-50 px-3 py-1.5 rounded-full border border-pink-200 uppercase tracking-wide">
+                        Status: Siap Bermain
+                    </span>
+                    <button onclick="generateProblem()" class="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white font-black py-2.5 px-6 rounded-2xl shadow-md transition-all transform hover:scale-105 active:scale-95 text-xs heading-font">
+                        ✨ ACAK MATRIKS BARU
+                    </button>
+                </div>
+
+                <!-- Interactive Chalkboard Representation -->
+                <div id="chalkboardContainer" class="w-full max-w-sm bg-slate-900 rounded-3xl p-8 border-8 border-amber-800 shadow-2xl relative min-h-[340px] flex flex-col justify-center transition-all duration-300">
+                    
+                    <!-- Inner Grid Wrapper: Locks width to 216px for neat, compact look -->
+                    <div class="w-[216px] mx-auto flex flex-col gap-3">
+                        
+                        <!-- Carry digits (Simpanan) row -->
+                        <div class="grid grid-cols-4 gap-2 items-center text-center h-10">
+                            <div></div>
+                            <!-- Carry box directly above Tens column -->
+                            <div class="flex justify-center">
+                                <input type="number" id="carryInput" min="0" max="9" oninput="handleCarryInput(this)" class="w-12 h-10 bg-slate-800 text-amber-300 border-2 border-dashed border-amber-400 rounded-lg text-center font-bold text-lg focus:outline-none transition-all duration-300 placeholder-transparent" placeholder="?">
+                            </div>
+                            <div></div>
+                            <div></div>
+                        </div>
+
+                        <!-- Multiplication digits (Top Number) -->
+                        <div class="grid grid-cols-4 gap-2 text-center items-center text-3xl font-bold text-white tracking-wide">
+                            <div></div>
+                            <!-- Top Tens Column -->
+                            <div id="digitTopTens" class="w-12 h-12 flex items-center justify-center bg-slate-800/50 rounded-xl border border-slate-700">2</div>
+                            <!-- Top Units Column -->
+                            <div id="digitTopUnits" class="w-12 h-12 flex items-center justify-center bg-slate-800/50 rounded-xl border border-slate-700">4</div>
+                            <div></div>
+                        </div>
+
+                        <!-- Multiplier row (Bottom Number) -->
+                        <div class="grid grid-cols-4 gap-2 text-center items-center text-3xl font-bold text-white tracking-wide">
+                            <!-- Operation Symbol -->
+                            <div class="text-pink-400 text-center font-bold text-2xl">×</div>
+                            <div></div>
+                            <!-- Bottom Units Column -->
+                            <div id="digitBottomUnits" class="w-12 h-12 flex items-center justify-center bg-pink-900/40 rounded-xl border border-pink-800 text-pink-300">3</div>
+                            <div></div>
+                        </div>
+
+                        <!-- The underline decoration line (spans full 216px width) -->
+                        <div class="w-full h-1 bg-white rounded-full"></div>
+
+                        <!-- Final answers row -->
+                        <div class="grid grid-cols-4 gap-2 text-center items-center">
+                            <!-- Result Hundreds & Tens (Occupies Col 1 and Col 2: exactly 104px wide) -->
+                            <div class="col-span-2 flex justify-center">
+                                <input type="number" id="ansTensInput" min="0" max="99" oninput="handleTensInput(this)" class="w-[104px] h-12 bg-slate-800 text-white border-3 border-dashed border-slate-600 rounded-xl text-center font-bold text-2xl focus:outline-none focus:border-purple-400 focus:bg-slate-700 transition-all placeholder-slate-500" placeholder="?">
+                            </div>
+                            <!-- Result Units (Occupies Col 3: exactly 48px wide, lurus di bawah satuan atas & pengali) -->
+                            <div class="flex justify-center">
+                                <input type="number" id="ansUnitsInput" min="0" max="9" oninput="handleUnitsInput(this)" class="w-12 h-12 bg-slate-800 text-white border-3 border-dashed border-slate-600 rounded-xl text-center font-bold text-2xl focus:outline-none focus:border-pink-400 focus:bg-slate-700 transition-all placeholder-slate-500" placeholder="?">
+                            </div>
+                            <!-- Empty Space Column 4 -->
+                            <div></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <!-- Live Feedback Panel -->
+                <div class="w-full mt-6 text-center">
+                    <div id="statusMessage" class="min-h-[48px] px-6 py-3 rounded-2xl bg-pink-50 border border-pink-200 text-pink-700 font-bold text-xs md:text-sm flex items-center justify-center gap-2">
+                        Ketikkan angka ke dalam kotak untuk memulai perkalian bersusun kastel!
+                    </div>
+                    
+                    <!-- Interactive Action button for validation -->
+                    <div class="flex gap-4 justify-center mt-4">
+                        <button id="btnCheckAction" onclick="validateCurrentStep()" class="bg-pink-600 text-white font-bold py-3 px-8 rounded-full shadow-md hover:bg-pink-700 transition-all hover:scale-105 text-xs heading-font uppercase tracking-wider hidden">
+                            Cek Jawaban Manual
+                        </button>
+                        <button id="btnHint" onclick="giveHelperHint()" class="bg-amber-100 text-amber-700 hover:bg-amber-200 font-bold py-3 px-5 rounded-full border border-amber-300 transition-all text-xs">
+                            💡 MINTA PETUNJUK
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Simple Sound Synthesis (No External Dependencies) -->
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, type, duration) {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch (e) {
+                console.log("Audio synthesis not supported or needs user click interaction first.");
+            }
+        }
+        
+        function soundSuccess() {
+            playTone(523.25, 'sine', 0.15); // C5
+            setTimeout(() => playTone(659.25, 'sine', 0.25), 100); // E5
+        }
+
+        function soundFail() {
+            playTone(220, 'triangle', 0.3); // A3
+        }
+
+        function soundLevelUp() {
+            playTone(523.25, 'sine', 0.1);
+            setTimeout(() => playTone(659.25, 'sine', 0.1), 80);
+            setTimeout(() => playTone(783.99, 'sine', 0.1), 160);
+            setTimeout(() => playTone(1046.50, 'sine', 0.4), 240); // Celebration chord
+        }
+    </script>
+
+    <!-- Core Game Logic JavaScript -->
+    <script>
+        let gameMode = 'guided'; // 'guided' or 'challenge'
+        let difficulty = 'medium'; // 'easy', 'medium', 'hard'
+        let score = 0;
+        let lives = 3;
+        
+        // Active math problem data state
+        let numTop = 24;
+        let numBottom = 3;
+        let activeStep = 'init'; // 'init', 'step_units', 'step_carry', 'step_tens', 'solved'
+
+        // Core calculation parts
+        let topTens = 2;
+        let topUnits = 4;
+        let bottomUnits = 3;
+
+        let step1Product = 12; // topUnits * bottomUnits
+        let step1Write = 2; // step1Product % 10
+        let step1Carry = 1; // Math.floor(step1Product / 10)
+
+        let step2Product = 6; // topTens * bottomUnits
+        let finalStep2Sum = 7; // step2Product + step1Carry
+
+        function setMode(mode) {
+            gameMode = mode;
+            document.getElementById('modeGuidedBtn').className = mode === 'guided' 
+                ? "w-full text-left p-4 rounded-2xl border-3 transition-all duration-200 bg-pink-50 border-pink-400 text-pink-700 shadow-sm font-bold"
+                : "w-full text-left p-4 rounded-2xl border-3 transition-all duration-200 bg-slate-50 border-slate-200 text-slate-600 font-bold hover:bg-slate-100";
+            
+            document.getElementById('modeChallengeBtn').className = mode === 'challenge'
+                ? "w-full text-left p-4 rounded-2xl border-3 transition-all duration-200 bg-pink-50 border-pink-400 text-pink-700 shadow-sm font-bold"
+                : "w-full text-left p-4 rounded-2xl border-3 transition-all duration-200 bg-slate-50 border-slate-200 text-slate-600 font-bold hover:bg-slate-100";
+            
+            resetInputs();
+            generateProblem();
+        }
+
+        function setDifficulty(diff) {
+            difficulty = diff;
+            const buttons = {
+                easy: document.getElementById('diffEasy'),
+                medium: document.getElementById('diffMedium'),
+                hard: document.getElementById('diffHard')
+            };
+
+            // Set styling reset
+            for (let d in buttons) {
+                if (d === diff) {
+                    let colorClass = d === 'easy' ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : (d === 'medium' ? 'bg-amber-50 border-amber-300 text-amber-700' : 'bg-rose-50 border-rose-300 text-rose-700');
+                    buttons[d].className = `py-3 px-1 rounded-xl text-xs font-black text-center border-2 ${colorClass} hover:scale-105 transition-transform`;
+                } else {
+                    buttons[d].className = `py-3 px-1 rounded-xl text-xs font-black text-center border-2 bg-slate-50 border-slate-200 text-slate-600 hover:scale-105 transition-transform`;
+                }
+            }
+            generateProblem();
+        }
+
+        function updateGuide(text) {
+            document.getElementById('guideBubble').innerText = text;
+        }
+
+        function generateProblem() {
+            // Generate numbers based on selected difficulty
+            if (difficulty === 'easy') {
+                // Easy: No carryover product
+                let tUnits = Math.floor(Math.random() * 4) + 1; // 1-4
+                let bUnits = 2; // Fixed multiplier to prevent carryover
+                let tTens = Math.floor(Math.random() * 4) + 1; // 1-4
+                
+                numTop = tTens * 10 + tUnits;
+                numBottom = bUnits;
+            } else if (difficulty === 'medium') {
+                // Medium: Has carryover
+                let tUnits = Math.floor(Math.random() * 5) + 5; // 5-9
+                let bUnits = Math.floor(Math.random() * 3) + 3; // 3-5
+                let tTens = Math.floor(Math.random() * 3) + 1; // 1-3
+
+                numTop = tTens * 10 + tUnits;
+                numBottom = bUnits;
+            } else {
+                // Hard: Larger numbers
+                numTop = Math.floor(Math.random() * 70) + 25; // 25-95
+                numBottom = Math.floor(Math.random() * 6) + 4; // 4-9
+            }
+
+            // Unpack digits
+            topTens = Math.floor(numTop / 10);
+            topUnits = numTop % 10;
+            bottomUnits = numBottom;
+
+            // Compute step answers
+            step1Product = topUnits * bottomUnits;
+            step1Write = step1Product % 10;
+            step1Carry = Math.floor(step1Product / 10);
+
+            step2Product = topTens * bottomUnits;
+            finalStep2Sum = step2Product + step1Carry;
+
+            // Reset visual chalkboard
+            document.getElementById('digitTopTens').innerText = topTens;
+            document.getElementById('digitTopUnits').innerText = topUnits;
+            document.getElementById('digitBottomUnits').innerText = bottomUnits;
+
+            resetInputs();
+            startPlayMode();
+        }
+
+        function resetInputs() {
+            // Reset input boxes
+            const carry = document.getElementById('carryInput');
+            const ansTens = document.getElementById('ansTensInput');
+            const ansUnits = document.getElementById('ansUnitsInput');
+
+            carry.value = '';
+            carry.style.opacity = '0.2';
+            carry.disabled = true;
+            carry.className = "w-12 h-10 bg-slate-800 text-amber-300 border-2 border-dashed border-amber-400 rounded-lg text-center font-bold text-lg focus:outline-none transition-all duration-300 placeholder-transparent";
+
+            ansTens.value = '';
+            ansTens.disabled = true;
+            ansTens.className = "w-[104px] h-12 bg-slate-800 text-white border-3 border-dashed border-slate-600 rounded-xl text-center font-bold text-2xl focus:outline-none focus:border-purple-400 focus:bg-slate-700 transition-all placeholder-slate-500";
+
+            ansUnits.value = '';
+            ansUnits.disabled = true;
+            ansUnits.className = "w-12 h-12 bg-slate-800 text-white border-3 border-dashed border-slate-600 rounded-xl text-center font-bold text-2xl focus:outline-none focus:border-pink-400 focus:bg-slate-700 transition-all placeholder-slate-500";
+        }
+
+        function startPlayMode() {
+            const ansUnits = document.getElementById('ansUnitsInput');
+            const carry = document.getElementById('carryInput');
+            const ansTens = document.getElementById('ansTensInput');
+
+            if (gameMode === 'guided') {
+                activeStep = 'step_units';
+                updateGuide(`Mari kita mulai petualangan bersusun! Langkah 1: Kalikan digit Satuan paling belakang: ${topUnits} × ${bottomUnits}. Berapakah hasilnya?`);
+                
+                ansUnits.disabled = false;
+                ansUnits.className = "w-12 h-12 bg-slate-800 text-white border-3 border-pink-400 border-solid rounded-xl text-center font-bold text-2xl focus:outline-none focus:bg-slate-700 transition-all placeholder-pink-300 animate-pulse";
+                ansUnits.focus();
+
+                document.getElementById('stepProgressIndicator').innerText = "STATUS: HITUNG SATUAN";
+                document.getElementById('statusMessage').innerText = `Ketikkan hasil satuan: ${topUnits} × ${bottomUnits} = ?`;
+            } else {
+                // Challenge mode: Free typing for all inputs simultaneously
+                activeStep = 'challenge_free';
+                updateGuide(`Selesaikan seluruh lembar perkalian secara mandiri! Isi semua kotak tanda tanya di bawah!`);
+
+                if (step1Carry > 0) {
+                    carry.disabled = false;
+                    carry.style.opacity = '1';
+                    carry.className = "w-12 h-10 bg-slate-800 text-amber-300 border-2 border-solid border-amber-400 rounded-lg text-center font-bold text-lg focus:outline-none transition-all duration-300";
+                }
+
+                ansTens.disabled = false;
+                ansTens.className = "w-[104px] h-12 bg-slate-800 text-white border-3 border-solid border-purple-400 rounded-xl text-center font-bold text-2xl focus:outline-none focus:bg-slate-700 transition-all";
+
+                ansUnits.disabled = false;
+                ansUnits.className = "w-12 h-12 bg-slate-800 text-white border-3 border-solid border-pink-400 rounded-xl text-center font-bold text-2xl focus:outline-none focus:bg-slate-700 transition-all";
+                ansUnits.focus();
+
+                document.getElementById('stepProgressIndicator').innerText = "STATUS: TANTANGAN BEBAS";
+                document.getElementById('statusMessage').innerText = `Selesaikan perkalian susun: ${numTop} × ${numBottom}`;
+            }
+        }
+
+        function handleUnitsInput(input) {
+            if (gameMode !== 'guided') {
+                checkChallengeCompletion();
+                return;
+            }
+
+            let val = parseInt(input.value);
+            if (val === step1Write) {
+                // Correct - lock input and trigger auto advance
+                soundSuccess();
+                input.disabled = true;
+                input.className = "w-12 h-12 bg-emerald-950 text-emerald-300 border-3 border-emerald-500 rounded-xl text-center font-bold text-2xl cursor-default";
+                
+                if (step1Carry > 0) {
+                    activeStep = 'step_carry';
+                    updateGuide(`Hebat! ${topUnits} × ${bottomUnits} = ${step1Product}. Sekarang tulis sisa angka simpanan ${step1Carry} di kotak atas kepala puluhan!`);
+                    
+                    const carry = document.getElementById('carryInput');
+                    carry.disabled = false;
+                    carry.style.opacity = '1';
+                    carry.className = "w-12 h-10 bg-slate-800 text-amber-300 border-2 border-solid border-amber-400 rounded-lg text-center font-bold text-lg focus:outline-none transition-all duration-300 animate-pulse";
+                    carry.focus();
+                    
+                    document.getElementById('stepProgressIndicator').innerText = "STATUS: MASUKKAN SIMPANAN";
+                    document.getElementById('statusMessage').innerText = `Tulis simpanan sisa: ${step1Carry}`;
+                } else {
+                    activeStep = 'step_tens';
+                    updateGuide(`Bagus! Tanpa simpanan. Sekarang, mari kalikan angka puluhannya: ${topTens} × ${bottomUnits}.`);
+                    
+                    const ansTens = document.getElementById('ansTensInput');
+                    ansTens.disabled = false;
+                    ansTens.className = "w-[104px] h-12 bg-slate-800 text-white border-3 border-solid border-purple-400 rounded-xl text-center font-bold text-2xl focus:outline-none focus:bg-slate-700 transition-all animate-pulse";
+                    ansTens.focus();
+                    
+                    document.getElementById('stepProgressIndicator').innerText = "STATUS: HITUNG PULUHAN";
+                    document.getElementById('statusMessage').innerText = `Kalikan puluhan: ${topTens} × ${bottomUnits} = ?`;
+                }
+            } else if (input.value.length >= 1) {
+                triggerWrongAnswer(input);
+            }
+        }
+
+        function handleCarryInput(input) {
+            if (gameMode !== 'guided') {
+                checkChallengeCompletion();
+                return;
+            }
+
+            let val = parseInt(input.value);
+            if (val === step1Carry) {
+                soundSuccess();
+                input.disabled = true;
+                input.className = "w-12 h-10 bg-emerald-950 text-amber-300 border-2 border-emerald-500 rounded-lg text-center font-bold text-lg cursor-default";
+                
+                activeStep = 'step_tens';
+                updateGuide(`Sempurna! Sekarang kalikan puluhannya: ${topTens} × ${bottomUnits}, lalu tambahkan simpanan (+${step1Carry}) tadi ya!`);
+                
+                const ansTens = document.getElementById('ansTensInput');
+                ansTens.disabled = false;
+                ansTens.className = "w-[104px] h-12 bg-slate-800 text-white border-3 border-solid border-purple-400 rounded-xl text-center font-bold text-2xl focus:outline-none focus:bg-slate-700 transition-all animate-pulse";
+                ansTens.focus();
+                
+                document.getElementById('stepProgressIndicator').innerText = "STATUS: HITUNG PULUHAN";
+                document.getElementById('statusMessage').innerText = `(${topTens} × ${bottomUnits}) + Simpanan ${step1Carry} = ?`;
+            } else if (input.value.length >= 1) {
+                triggerWrongAnswer(input);
+            }
+        }
+
+        function handleTensInput(input) {
+            if (gameMode !== 'guided') {
+                checkChallengeCompletion();
+                return;
+            }
+
+            let val = parseInt(input.value);
+            if (val === finalStep2Sum) {
+                soundLevelUp();
+                input.disabled = true;
+                input.className = "w-[104px] h-12 bg-emerald-950 text-emerald-300 border-3 border-emerald-500 rounded-xl text-center font-bold text-2xl cursor-default";
+                
+                activeStep = 'solved';
+                score += (difficulty === 'easy' ? 10 : (difficulty === 'medium' ? 20 : 30));
+                document.getElementById('gameScore').innerText = score;
+                
+                updateGuide(`Luar biasa pintar! Hasil perkalian ${numTop} × ${numBottom} adalah ${numTop * numBottom}.`);
+                document.getElementById('stepProgressIndicator').innerText = "STATUS: COMPLETED";
+                document.getElementById('statusMessage').innerText = `🎉 BERHASIL! ${numTop} × ${numBottom} = ${numTop * numBottom}`;
+            } else if (input.value.length >= String(finalStep2Sum).length) {
+                triggerWrongAnswer(input);
+            }
+        }
+
+        function checkChallengeCompletion() {
+            const carry = document.getElementById('carryInput');
+            const ansTens = document.getElementById('ansTensInput');
+            const ansUnits = document.getElementById('ansUnitsInput');
+
+            let userCarry = parseInt(carry.value) || 0;
+            let userTens = parseInt(ansTens.value) || 0;
+            let userUnits = parseInt(ansUnits.value) || 0;
+
+            let carryCorrect = (step1Carry === 0) || (userCarry === step1Carry);
+            let unitsCorrect = (userUnits === step1Write);
+            let tensCorrect = (userTens === finalStep2Sum);
+
+            if (carryCorrect && unitsCorrect && tensCorrect) {
+                soundLevelUp();
+                
+                carry.disabled = true;
+                carry.className = "w-12 h-10 bg-emerald-950 text-amber-300 border-2 border-emerald-500 rounded-lg text-center font-bold text-lg cursor-default";
+                
+                ansTens.disabled = true;
+                ansTens.className = "w-[104px] h-12 bg-emerald-950 text-emerald-300 border-3 border-emerald-500 rounded-xl text-center font-bold text-2xl cursor-default";
+                
+                ansUnits.disabled = true;
+                ansUnits.className = "w-12 h-12 bg-emerald-950 text-emerald-300 border-3 border-emerald-500 rounded-xl text-center font-bold text-2xl cursor-default";
+
+                score += (difficulty === 'easy' ? 15 : (difficulty === 'medium' ? 25 : 40));
+                document.getElementById('gameScore').innerText = score;
+
+                updateGuide(`Luar biasa! Seluruh perhitunganmu benar-benar tepat: ${numTop * numBottom}.`);
+                document.getElementById('stepProgressIndicator').innerText = "STATUS: COMPLETED";
+                document.getElementById('statusMessage').innerText = `🎉 BENAR! ${numTop} × ${numBottom} = ${numTop * numBottom}`;
+            }
+        }
+
+        function triggerWrongAnswer(inputElement) {
+            soundFail();
+            const container = document.getElementById('chalkboardContainer');
+            container.classList.add('shake-effect');
+            setTimeout(() => {
+                container.classList.remove('shake-effect');
+            }, 300);
+
+            inputElement.value = ''; // Auto-clear wrong answer for instant retry
+            lives--;
+            updateHeartsUI();
+
+            if (lives <= 0) {
+                updateGuide(`Nyawa habis! Jangan menyerah, klik tombol "ACAK MATRIKS BARU" untuk merestart kastel pio!`);
+                resetInputs();
+                score = 0;
+                document.getElementById('gameScore').innerText = score;
+                lives = 3;
+                updateHeartsUI();
+            } else {
+                updateGuide(`Hmm, coba periksa kembali hitunganmu manis.`);
+            }
+        }
+
+        function updateHeartsUI() {
+            const hContainer = document.getElementById('heartContainer');
+            hContainer.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                let heart = document.createElement('span');
+                heart.className = "text-lg transition-transform hover:scale-125 cursor-default";
+                heart.innerText = i < lives ? "❤️" : "🖤";
+                hContainer.appendChild(heart);
+            }
+        }
+
+        function giveHelperHint() {
+            if (activeStep === 'step_units') {
+                updateGuide(`Langkah satuan: Kalikan saja ${topUnits} × ${bottomUnits} = ${step1Product}. Suku paling belakangnya adalah ${step1Write}.`);
+            } else if (activeStep === 'step_carry') {
+                updateGuide(`Langkah simpanan: Karena hasil perkaliannya ${step1Product}, kita simpan angka depan puluhannya yaitu ${step1Carry} di kotak atas.`);
+            } else if (activeStep === 'step_tens') {
+                updateGuide(`Langkah puluhan: Kalikan puluhannya yaitu ${topTens} × ${bottomUnits} = ${step2Product}. Lalu tambahkan simpanan (+${step1Carry}).`);
+            } else {
+                updateGuide(`Selesaikan angka satuan terlebih dahulu, catat simpanan di atas jika ada, lalu kalikan puluhannya.`);
+            }
+        }
+
+        window.onload = function() {
+            generateProblem();
+        }
+    </script>
+
+    <!-- Friendly Educational Footer -->
+    <footer class="w-full bg-slate-900 text-slate-400 py-6 text-center text-xs border-t-4 border-purple-950">
+        <p class="font-bold text-slate-300">Dibuat penuh kasih sayang untuk menemani belajar matematika kelas 3-4 SD 🌸</p>
+        <p class="mt-1 opacity-75">Kurikulum Merdeka Mandiri Belajar - Auto Advance System</p>
+    </footer>
+
+</body>
+</html>

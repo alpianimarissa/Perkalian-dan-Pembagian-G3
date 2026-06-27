@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misi Perkalian Bersusun - Komando Antariksa</title>
+    <style>
+        :root {
+            --primary: #00d2fc;
+            --primary-dark: #0984e3;
+            --secondary: #6c5ce7;
+            --background: #f0f3f8;
+            --card-bg: #ffffff;
+            --text: #1e272e;
+            --success: #20bf6b;
+            --accent: #ff9f43;
+            --wrong: #ff4757;
+            --gray-light: #f1f2f6;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--background);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app-container {
+            width: 100%;
+            max-width: 850px;
+            background: var(--card-bg);
+            border-radius: 24px;
+            box-shadow: 0 12px 35px rgba(9, 132, 227, 0.15);
+            margin: 40px auto;
+            padding: 30px;
+            position: relative;
+            min-height: 620px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 4px solid #dff9fb;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px dashed #c5eff7;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .title-badge {
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
+            color: white;
+            padding: 8px 18px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 10px rgba(9, 132, 227, 0.2);
+        }
+
+        .page-indicator {
+            font-size: 15px;
+            color: var(--secondary);
+            font-weight: bold;
+            background: #eef2f7;
+            padding: 6px 16px;
+            border-radius: 15px;
+            border: 1px solid #dcdde1;
+        }
+
+        .slide {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+            flex-grow: 1;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1, h2, h3 {
+            color: var(--primary-dark);
+            margin-top: 0;
+            font-weight: 800;
+        }
+
+        p {
+            font-size: 17px;
+            line-height: 1.6;
+            color: #2f3542;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(9, 132, 227, 0.3);
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(9, 132, 227, 0.5);
+        }
+
+        .btn:disabled {
+            background: #dfe4ea;
+            color: #a4b0be;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: #f1f2f6;
+            color: #57606f;
+            box-shadow: none;
+            border: 1px solid #ced6e0;
+        }
+
+        .btn-secondary:hover {
+            background: #dfe4ea;
+            color: #2f3542;
+            box-shadow: none;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 15px;
+            border-top: 3px dashed #c5eff7;
+        }
+
+        .math-grid {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 32px;
+            font-weight: bold;
+            margin: 25px auto;
+            width: fit-content;
+            text-align: right;
+            letter-spacing: 12px;
+            line-height: 1.4;
+            position: relative;
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 2px solid #ced6e0;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .math-line {
+            border-bottom: 4px solid var(--text);
+            margin-top: 5px;
+            margin-bottom: 5px;
+            padding-right: 12px;
+            position: relative;
+        }
+
+        .math-sign {
+            position: absolute;
+            left: -30px;
+            bottom: -6px;
+            color: var(--accent);
+        }
+
+        .interactive-box {
+            background: #eef2f7;
+            border: 2px dashed var(--primary-dark);
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .input-answer {
+            width: 90px;
+            font-size: 22px;
+            text-align: center;
+            border: 3px solid var(--secondary);
+            border-radius: 12px;
+            padding: 8px;
+            color: var(--secondary);
+            font-weight: bold;
+            background: #fff;
+            transition: all 0.2s;
+        }
+
+        .input-answer:focus {
+            outline: none;
+            border-color: var(--primary-dark);
+            box-shadow: 0 0 10px rgba(9, 132, 227, 0.3);
+        }
+
+        .feedback {
+            margin-top: 12px;
+            font-weight: bold;
+            font-size: 17px;
+            min-height: 24px;
+        }
+
+        .correct { color: var(--success); }
+        .wrong { color: var(--wrong); }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 10px;
+            background: #e4e7eb;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            border: 1px solid #ced6e0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 2.85%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .character-bubble {
+            background: #f8f9fa;
+            border-radius: 18px;
+            padding: 18px;
+            margin: 20px 0;
+            position: relative;
+            border-left: 6px solid var(--primary-dark);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .grid-3d {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .card-3d {
+            background: #fff;
+            border: 3px solid #ced6e0;
+            border-radius: 16px;
+            padding: 20px 15px;
+            text-align: center;
+            font-weight: bold;
+            box-shadow: 0 6px 0 #bdc3c7;
+            transition: transform 0.1s, box-shadow 0.1s;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .card-3d:active {
+            transform: translateY(6px);
+            box-shadow: 0 0px 0 transparent;
+        }
+
+        .notification-overlay {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 14, 23, 0.85);
+            z-index: 100;
+            border-radius: 20px;
+            justify-content: center;
+            align-items: center;
+            animation: fadeInOverlay 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .notification-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            border: 4px solid var(--primary);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            animation: scaleIn 0.3s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0.9); }
+            to { transform: scale(1); }
+        }
+
+        .notification-box h3 {
+            margin-bottom: 15px;
+            color: var(--primary-dark);
+        }
+
+        .notification-box p {
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .highlight {
+            color: var(--primary-dark);
+            font-weight: bold;
+            background: #e3fafc;
+            padding: 2px 8px;
+            border-radius: 6px;
+        }
+
+        /* Certificate presentation */
+        .cert-card {
+            background: radial-gradient(circle, #ffffff 0%, #f1f9ff 100%);
+            border: 6px double #38bdf8;
+            padding: 40px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(56, 189, 248, 0.2);
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div id="app-container">
+    <!-- Top Header info -->
+    <div class="header">
+        <div class="title-badge">🚀 Komando Antariksa - Misi Matematika</div>
+        <div class="page-indicator" id="pageNumber">Halaman 1 / 35</div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Custom Notification Dialog -->
+    <div class="notification-overlay" id="customAlert">
+        <div class="notification-box">
+            <h3 id="alertTitle">Sinyal Komando</h3>
+            <p id="alertMessage">Pesan sistem...</p>
+            <button class="btn" onclick="closeAlert()">Konfirmasi Misi</button>
+        </div>
+    </div>
+
+    <!-- 35 Pages of Content dynamically defined -->
+    <div id="slides-wrapper">
+
+        <!-- PAGE 1: JUDUL UTAMA -->
+        <div class="slide active" id="slide-1">
+            <div class="illustration" style="text-align: center; margin: 20px 0;">
+                <svg width="180" height="180" viewBox="0 0 100 100">
+                    <defs>
+                        <linearGradient id="cyberGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#00d2fc;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6c5ce7;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <polygon points="50,5 95,25 95,75 50,95 5,75 5,25" fill="none" stroke="url(#cyberGrad)" stroke-width="4"/>
+                    <circle cx="50" cy="50" r="30" fill="url(#cyberGrad)" />
+                    <text x="50" y="60" font-family="'Segoe UI', Arial, sans-serif" font-size="34" fill="white" text-anchor="middle" font-weight="900">×</text>
+                </svg>
+            </div>
+            <h1 style="text-align: center; font-size: 28px;">Operasi Perkalian Bersusun Antariksa</h1>
+            <p style="text-align: center; font-size: 18px; color: #57606f;">
+                Halo Kadet Tangguh! Bersiaplah meluncur naik ke Kelas 5 dengan skill tempur matematika barumu yang super tangguh! 🛸
+            </p>
+            <div class="character-bubble">
+                <strong>🤖 Sersan Pio:</strong> "Lapor, Kadet! Saya asisten mekanik robotmu. Saya akan membantumu menembus 35 tingkat simulasi taktis untuk menguasai kalkulasi perkalian bersusun secepat kilat!"
+            </div>
+        </div>
+
+        <!-- PAGE 2: TUJUAN PEMBELAJARAN -->
+        <div class="slide" id="slide-2">
+            <h2>🎯 Misi Utama Protokol Belajar</h2>
+            <p>Di akhir program simulasi ini, sistem logikamu akan ter-upgrade sempurna untuk menguasai:</p>
+            <div class="interactive-box" style="text-align: left;">
+                <ul style="margin: 0; padding-left: 20px; font-size: 16px; line-height: 1.8;">
+                    <li><strong>Akurasi Nilai Tempat:</strong> Memahami penyelarasan baris satuan dan puluhan.</li>
+                    <li><strong>Algoritma Bersusun:</strong> Mengalikan secara teratur tanpa kekeliruan indeks.</li>
+                    <li><strong>Protokol Menyimpan:</strong> Mentransfer muatan energi sisa ke sektor sebelah kiri secara dinamis.</li>
+                </ul>
+            </div>
+            <p>Sesuai dengan <strong>Kurikulum Merdeka Kelas 4 SD</strong>, kita akan berlatih dengan sistem kontrol antarmuka canggih!</p>
+        </div>
+
+        <!-- PAGE 3: WARM-UP (PENGUATAN KONSEP DASAR) -->
+        <div class="slide" id="slide-3">
+            <h2>🔥 Akselerasi Awal: Mengingat Konsep</h2>
+            <p>Sebelum kita menyusun modul energi, mari segarkan sistem inti memori tentang arti dasar operasi perkalian.</p>
+            <div class="character-bubble">
+                Perkalian sebenarnya adalah <strong>penjumlahan berulang</strong> yang dilakukan secara konstan!
+            </div>
+            <div class="interactive-box" style="text-align: center;">
+                <p style="font-size: 22px; margin: 5px 0;">3 × 4 memiliki arti...</p>
+                <p style="font-size: 26px; color: var(--secondary); font-weight: bold; margin: 5px 0;">4 + 4 + 4 = 12</p>
+            </div>
+        </div>
+
+        <!-- PAGE 4: INTERACTIVE WARM-UP QUIZ 1 -->
+        <div class="slide" id="slide-4">
+            <h2>🧩 Kuis Sistem Pemanasan 1</h2>
+            <p>Masukkan kunci digital di bawah ini untuk mengaktifkan generator tenaga roket!</p>
+            <div class="interactive-box">
+                <p style="font-size: 20px; margin-bottom: 15px;">Berapakah hasil kalkulasi dari <strong>5 × 6</strong>?</p>
+                <input type="number" id="q4" class="input-answer">
+                <button class="btn" onclick="checkAns('q4', 30, 'ans4')">Dekripsi Sandi</button>
+                <div id="ans4" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 5: INTERACTIVE WARM-UP QUIZ 2 -->
+        <div class="slide" id="slide-5">
+            <h2>🧩 Kuis Sistem Pemanasan 2</h2>
+            <p>Satu konfirmasi kode lagi untuk memastikan kalibrasi instrumen navigasimu prima!</p>
+            <div class="interactive-box">
+                <p style="font-size: 20px; margin-bottom: 15px;">Berapakah hasil kalkulasi dari <strong>7 × 4</strong>?</p>
+                <input type="number" id="q5" class="input-answer">
+                <button class="btn" onclick="checkAns('q5', 28, 'ans5')">Dekripsi Sandi</button>
+                <div id="ans5" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 6: REAL-WORLD CONNECTION -->
+        <div class="slide" id="slide-6">
+            <h2>🔋 Logistik Pengisian Baterai Mech-Robot</h2>
+            <p>Bayangkan kamu adalah Komandan Skuadron yang sedang mempersiapkan 3 robot jelajah tangguh.</p>
+            <div class="illustration" style="text-align: center; margin: 15px 0;">
+                <svg width="180" height="90" viewBox="0 0 100 50">
+                    <rect x="5" y="10" width="24" height="30" rx="4" fill="#2f3542" stroke="var(--primary)" stroke-width="2"/>
+                    <rect x="38" y="10" width="24" height="30" rx="4" fill="#2f3542" stroke="var(--primary)" stroke-width="2"/>
+                    <rect x="71" y="10" width="24" height="30" rx="4" fill="#2f3542" stroke="var(--primary)" stroke-width="2"/>
+                    <text x="17" y="28" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">12V</text>
+                    <text x="50" y="28" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">12V</text>
+                    <text x="83" y="28" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">12V</text>
+                </svg>
+            </div>
+            <p>Setiap robot membutuhkan asupan daya sebesar <strong>12 Mega-Watt</strong>. Berapakah total daya baterai yang harus disalurkan?</p>
+            <div class="character-bubble">
+                Kita bisa menghitung manual: 12 + 12 + 12. Namun bagaimana jika skuadronmu memiliki 25 robot tempur? Penjumlahan manual akan mematikan sistem fokusmu! Di sinilah **Metode Perkalian Bersusun** hadir sebagai solusi mutlak!
+            </div>
+        </div>
+
+        <!-- PAGE 7: PENGENALAN KONSEP BERSUSUN -->
+        <div class="slide" id="slide-7">
+            <h2>🏗️ Logika Dekomposisi Angka</h2>
+            <p>Perkalian bersusun adalah taktik memecah angka kompleks menjadi unit-unit kecil yang mudah dimusnahkan.</p>
+            <p>Mari bedah struktur data muatan <span class="highlight">12</span>:</p>
+            <ul style="font-size: 16px; line-height: 2;">
+                <li>Angka 1 menempati sektor <strong>Puluhan</strong> (memiliki kekuatan 10)</li>
+                <li>Angka 2 menempati sektor <strong>Satuan</strong> (memiliki kekuatan 2)</li>
+            </ul>
+            <p>Kita akan meluncurkan perkalian pada masing-masing sektor nilai tempat ini secara bergantian!</p>
+        </div>
+
+        <!-- PAGE 8: MATERI STRUKTUR PENULISAN -->
+        <div class="slide" id="slide-8">
+            <h2>✏️ Pemosisian Koordinat Senjata</h2>
+            <p>Agar kalkulasi tidak salah sasaran, posisi angka puluhan dan satuan wajib disejajarkan lurus ke bawah!</p>
+            <div class="math-grid">
+                12<br>
+                3<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+            </div>
+            <p style="text-align: center; color: var(--primary-dark); font-weight: bold;">Angka 3 diposisikan sejajar lurus di bawah angka 2 karena keduanya sama-sama berstatus Satuan!</p>
+        </div>
+
+        <!-- PAGE 9: LANGKAH 1 - KALIKAN SATUAN -->
+        <div class="slide" id="slide-9">
+            <h2>⚡ Fase 1: Serangan Sektor Satuan</h2>
+            <p>Serangan pertama selalu diluncurkan dari posisi paling kanan (Sektor Satuan).</p>
+            <div class="math-grid">
+                1<span style="color:var(--accent)">2</span><br>
+                <span style="color:var(--accent)">3</span><br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                <span style="color:var(--accent)">6</span>
+            </div>
+            <p>Kita selesaikan: <span class="highlight">2 × 3 = 6</span>. Tulis angka 6 lurus di bawah garis kolom satuan!</p>
+        </div>
+
+        <!-- PAGE 10: LANGKAH 2 - KALIKAN PULUHAN -->
+        <div class="slide" id="slide-10">
+            <h2>🚀 Fase 2: Serangan Sektor Puluhan</h2>
+            <p>Setelah sektor satuan takluk, kita arahkan pengali bawah ke barisan puluhan di atasnya.</p>
+            <div class="math-grid">
+                <span style="color:var(--secondary)">1</span>2<br>
+                <span style="color:var(--secondary)">3</span><br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                <span style="color:var(--secondary)">3</span>6
+            </div>
+            <p>Kita selesaikan: <span class="highlight">1 × 3 = 3</span>. Tulis angka 3 tepat di posisi puluhan (di depan angka 6).</p>
+            <p>Hasil pengisian daya total berhasil diamankan: <strong>36 Mega-Watt</strong>!</p>
+        </div>
+
+        <!-- PAGE 11: CONTOH SOAL MANDIRI 1 -->
+        <div class="slide" id="slide-11">
+            <h2>🤖 Uji Operasional: Simulasi Mandiri 1</h2>
+            <p>Aktifkan konsol analisismu dan selesaikan kalkulasi ini: <strong>21 × 4</strong></p>
+            <div class="math-grid">
+                21<br>
+                4<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+            </div>
+            <div class="interactive-box">
+                Ketikkan hasil akhir kalkulasimu: 
+                <input type="number" id="q11" class="input-answer" style="width: 120px;">
+                <button class="btn" onclick="checkAns('q11', 84, 'ans11')">Kirim Transmisi</button>
+                <div id="ans11" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 12: PEMBAHASAN CONTOH SOAL 1 -->
+        <div class="slide" id="slide-12">
+            <h2>🔍 Pembongkaran Rekaman Data 21 × 4</h2>
+            <div class="character-bubble">
+                <ul>
+                    <li><strong>Fase Satuan:</strong> 1 × 4 = 4. Catat 4 pada output belakang.</li>
+                    <li><strong>Fase Puluhan:</strong> 2 × 4 = 8. Catat 8 pada output depan.</li>
+                    <li>Sistem menggabungkan data menjadi: <strong>84</strong>!</li>
+                </ul>
+            </div>
+            <p>Sangat mengesankan! Kamu berhasil menaklukkan sasaran tanpa modul penyimpanan.</p>
+        </div>
+
+        <!-- PAGE 13: KONSEP BARU - TEKNIK MENYIMPAN -->
+        <div class="slide" id="slide-13">
+            <h2>🛸 Modul Upgrade: Protokol Penyimpanan Energi</h2>
+            <p>Apa yang harus kita lakukan apabila akumulasi daya di sektor satuan melampaui kapasitas 9? Contoh: <strong>14 × 4</strong>.</p>
+            <p>Daya satuan: 4 × 4 = <strong>16</strong>. Batas kolom satuan hanya mampu menampung satu digit!</p>
+            <div class="character-bubble">
+                <strong>Sersan Pio:</strong> "Gunakan Protokol Penyimpanan! Tulis digit satuannya (<span class="highlight">6</span>) di bawah garis, lalu kirim/simpan digit puluhannya (<span class="highlight">1</span>) di atas kepala sektor puluhan di sebelahnya!"
+            </div>
+        </div>
+
+        <!-- PAGE 14: LANGKAH DETAIL TEKNIK MENYIMPAN -->
+        <div class="slide" id="slide-14">
+            <h2>📸 Visualisasi Transmisi Muatan (14 × 4)</h2>
+            <div class="math-grid">
+                <span style="font-size:18px; color:var(--wrong); vertical-align:super;">(1)</span><br>
+                14<br>
+                4<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                6
+            </div>
+            <p>Lihat indikator angka 1 kecil di atas? Itu adalah cadangan muatan yang kita simpan!</p>
+        </div>
+
+        <!-- PAGE 15: MENYELESAIKAN TEKNIK MENYIMPAN -->
+        <div class="slide" id="slide-15">
+            <h2>🔋 Integrasi Simpanan Energi</h2>
+            <p>Langkah berikutnya, kalikan sektor puluhan: 1 × 4 = 4.</p>
+            <p>Kini gabungkan cadangan yang kita simpan tadi: 4 + <span class="highlight">1</span> = <strong>5</strong>.</p>
+            <div class="math-grid">
+                56
+            </div>
+            <p>Hasil akhir operasi 14 × 4 berhasil diselesaikan: <strong>56</strong>!</p>
+        </div>
+
+        <!-- PAGE 16: LATIHAN INTERAKTIF MENYIMPAN 1 -->
+        <div class="slide" id="slide-16">
+            <h2>⚡ Uji Tempur Bersama Pio 1</h2>
+            <p>Arahkan tembakan analisismu pada persamaan ini: <strong>16 × 3</strong></p>
+            <p>Ingat: 6 × 3 = 18 (tulis 8 di bawah, simpan 1 di atas). Kemudian selesaikan perkalian puluhan beserta simpanannya!</p>
+            <div class="interactive-box">
+                Hasil tembakan daya: 
+                <input type="number" id="q16" class="input-answer" style="width:120px;">
+                <button class="btn" onclick="checkAns('q16', 48, 'ans16')">Tembak</button>
+                <div id="ans16" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 17: LATIHAN INTERAKTIF MENYIMPAN 2 -->
+        <div class="slide" id="slide-17">
+            <h2>⚡ Uji Tempur Bersama Pio 2</h2>
+            <p>Selesaikan sebelum batas waktu generator habis: <strong>25 × 3</strong></p>
+            <div class="interactive-box">
+                Ketik koordinat hasil: 
+                <input type="number" id="q17" class="input-answer" style="width:120px;">
+                <button class="btn" onclick="checkAns('q17', 75, 'ans17')">Tembak</button>
+                <div id="ans17" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 18: TANTANGAN PULUHAN LEBIH BESAR -->
+        <div class="slide" id="slide-18">
+            <h2>🏆 Operasi Melewati Batas: Level Skuadron Besar</h2>
+            <p>Sekarang kita hadapi gerombolan angka puluhan yang lebih raksasa: <strong>42 × 5</strong>.</p>
+            <p>Jangan panik, sistem mekanismenya tetap konstan!</p>
+            <ul style="font-size: 16px; line-height: 2;">
+                <li>2 × 5 = 10 (tulis 0 di satuan, simpan 1 di atas puluhan)</li>
+                <li>4 × 5 = 20. Sekarang gabungkan simpanan 1 tadi = 21</li>
+                <li>Tulis seluruh angka 21 di bagian depan output: <strong>210</strong></li>
+            </ul>
+        </div>
+
+        <!-- PAGE 19: KUIS INTERAKTIF ANGKA BESAR -->
+        <div class="slide" id="slide-19">
+            <h2>⭐ Kuis Armada Tempur Utama</h2>
+            <p>Kalkulasikan daya optimal armada ini: <strong>35 × 4</strong></p>
+            <div class="interactive-box">
+                Daya total: 
+                <input type="number" id="q19" class="input-answer" style="width:120px;">
+                <button class="btn" onclick="checkAns('q19', 140, 'ans19')">Eksekusi</button>
+                <div id="ans19" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 20: BREAK TIME - FUN FACTS -->
+        <div class="slide" id="slide-20">
+            <h2>👾 Sinyal Intersept: Fakta Unik Kosmik</h2>
+            <p>Tahukah kamu? Angka berapapun jika berbenturan dengan angka **0** akan langsung lenyap menjadi **0**!</p>
+            <div class="interactive-box" style="text-align: center; background: #e8f8f5;">
+                <p style="font-size: 24px; color: var(--success); font-weight: bold; margin: 5px 0;">99 × 0 = 0</p>
+                <p style="font-size: 24px; color: var(--success); font-weight: bold; margin: 5px 0;">1.000.000 × 0 = 0</p>
+            </div>
+            <p>Angka 0 bertindak bagaikan *Black Hole* matematika yang sangat perkasa!</p>
+        </div>
+
+        <!-- PAGE 21: REAL-WORLD PROBLEM BERBENTUK CERITA -->
+        <div class="slide" id="slide-21">
+            <h2>🛸 Navigasi Drone Penjelajah Titan</h2>
+            <p>Pesawat indukmu mengerahkan 6 kelompok drone pencari mineral ke bulan Titan. Masing-masing kelompok terdiri atas 15 unit drone taktis.</p>
+            <p>Berapa jumlah keseluruhan unit drone yang beroperasi di permukaan Titan?</p>
+            <div class="interactive-box">
+                Persamaan Taktis: 15 × 6 = 
+                <input type="number" id="q21" class="input-answer" style="width:120px;">
+                <button class="btn" onclick="checkAns('q21', 90, 'ans21')">Luncurkan Drone</button>
+                <div id="ans21" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 22: PEMBAHASAN SOAL DRONE -->
+        <div class="slide" id="slide-22">
+            <h2>🔍 Bedah Strategi Formasi Drone</h2>
+            <p>Berikut adalah visualisasi kalkulasinya:</p>
+            <div class="math-grid">
+                15<br>
+                6<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                90
+            </div>
+            <p>5 × 6 = 30 (tulis 0, simpan 3). 1 × 6 = 6, gabungkan simpanan 3 = 9. Total kekuatan tempur drone adalah <strong>90 unit</strong>!</p>
+        </div>
+
+        <!-- PAGE 23: LATIHAN MANDIRI - LEVEL 1 -->
+        <div class="slide" id="slide-23">
+            <h2>🟢 Misi Latihan: Sektor Hijau (No Regrouping)</h2>
+            <p>Gempur sasaran berikut secara langsung: <strong>13 × 3</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q23" class="input-answer">
+                <button class="btn" onclick="checkAns('q23', 39, 'ans23')">Eksekusi</button>
+                <div id="ans23" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 24: LATIHAN MANDIRI - LEVEL 2 -->
+        <div class="slide" id="slide-24">
+            <h2>🟡 Misi Latihan: Sektor Kuning (Regrouping Ringan)</h2>
+            <p>Kalkulasikan lintasan energi ini: <strong>24 × 2</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q24" class="input-answer">
+                <button class="btn" onclick="checkAns('q24', 48, 'ans24')">Eksekusi</button>
+                <div id="ans24" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 25: LATIHAN MANDIRI - LEVEL MERAH -->
+        <div class="slide" id="slide-25">
+            <h2>🔴 Misi Latihan: Sektor Merah (Regrouping Penuh)</h2>
+            <p>Gunakan seluruh modul penyimpanan energimu: <strong>18 × 4</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q25" class="input-answer">
+                <button class="btn" onclick="checkAns('q25', 72, 'ans25')">Eksekusi</button>
+                <div id="ans25" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 26: GAME DETEKTIF MATEMATIKA -->
+        <div class="slide" id="slide-26">
+            <h2>🕵️ Detektif Komando: Melacak Sinyal Korup</h2>
+            <p>Sebagian data radar terhapus badai kosmik! Temukan angka satuan yang tertutup tanda tanya (?):</p>
+            <div class="math-grid">
+                2 ?<br>
+                3<br>
+                <div class="math-line"><span class="math-sign">×</span></div>
+                69
+            </div>
+            <div class="interactive-box">
+                Angka pengganti tanda tanya (?) adalah:
+                <input type="number" id="q26" class="input-answer">
+                <button class="btn" onclick="checkAns('q26', 3, 'ans26')">Kirim Rekomendasi</button>
+                <div id="ans26" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 27: TIP SUPER CEPAT BERSUSUN -->
+        <div class="slide" id="slide-27">
+            <h2>💡 Protokol Rahasia Juara Komando</h2>
+            <div class="character-bubble">
+                <strong> Sersan Pio:</strong> "Selalu buat tanda simpanan angka kecil di atas sektor puluhan agar kamu tidak lupa menggabungkannya saat serangan fase kedua dilakukan!"
+            </div>
+            <p>Ketelitian menulis koordinat sejajar adalah jaminan kesuksesan 100%!</p>
+        </div>
+
+        <!-- PAGE 28: KUIS FINAL UTAMA - SOAL 1 -->
+        <div class="slide" id="slide-28">
+            <h2>🏆 Evaluasi Tempur Akhir (1/5)</h2>
+            <p>Buktikan ketangguhan analisismu: <strong>31 × 5</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q28" class="input-answer">
+                <button class="btn" onclick="checkAns('q28', 155, 'ans28')">Kunci Koordinat</button>
+                <div id="ans28" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 29: KUIS FINAL UTAMA - SOAL 2 -->
+        <div class="slide" id="slide-29">
+            <h2>🏆 Evaluasi Tempur Akhir (2/5)</h2>
+            <p>Buktikan ketangguhan analisismu: <strong>12 × 7</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q29" class="input-answer">
+                <button class="btn" onclick="checkAns('q29', 84, 'ans29')">Kunci Koordinat</button>
+                <div id="ans29" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 30: KUIS FINAL UTAMA - SOAL 3 -->
+        <div class="slide" id="slide-30">
+            <h2>🏆 Evaluasi Tempur Akhir (3/5)</h2>
+            <p>Buktikan ketangguhan analisismu: <strong>45 × 2</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q30" class="input-answer">
+                <button class="btn" onclick="checkAns('q30', 90, 'ans30')">Kunci Koordinat</button>
+                <div id="ans30" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 31: KUIS FINAL UTAMA - SOAL 4 -->
+        <div class="slide" id="slide-31">
+            <h2>🏆 Evaluasi Tempur Akhir (4/5)</h2>
+            <p>Buktikan ketangguhan analisismu: <strong>23 × 4</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q31" class="input-answer">
+                <button class="btn" onclick="checkAns('q31', 92, 'ans31')">Kunci Koordinat</button>
+                <div id="ans31" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 32: KUIS FINAL UTAMA - SOAL 5 -->
+        <div class="slide" id="slide-32">
+            <h2>🏆 Evaluasi Tempur Akhir (5/5)</h2>
+            <p>Sasaran terakhir untuk meraih medali emas! <strong>54 × 3</strong></p>
+            <div class="interactive-box">
+                <input type="number" id="q32" class="input-answer">
+                <button class="btn" onclick="checkAns('q32', 162, 'ans32')">Kunci Koordinat</button>
+                <div id="ans32" class="feedback"></div>
+            </div>
+        </div>
+
+        <!-- PAGE 33: JURNAL REFLEKSI -->
+        <div class="slide" id="slide-33">
+            <h2>Thoughts Jurnal Refleksi Komandan</h2>
+            <p>Bagaimana kondisi mental analisismu setelah mengikuti latihan taktis perkalian bersusun hari ini?</p>
+            <div class="grid-3d">
+                <div class="card-3d" onclick="openAlert('Keren!', 'Sistem analisismu kini dalam kondisi optimal. Kamu siap meluncur ke tantangan berikutnya!')">🛸 Sangat Seru!</div>
+                <div class="card-3d" onclick="openAlert('Luar Biasa!', 'Hebat, pertahankan fokusmu. Terus berlatih agar sistemmu semakin tangguh!')">⚡ Cukup Lancar</div>
+                <div class="card-3d" onclick="openAlert('Siap Tempur!', 'Tidak masalah, Komandan! Kamu bisa meretas ulang materi latihan ini kapan saja untuk perbaikan daya.')">🛠️ Butuh Latihan Lagi</div>
+            </div>
+            <p style="font-size: 14px; text-align: center; color: #7f8c8d; margin-top: 20px;">(Pilih salah satu status di atas untuk mengonfirmasi)</p>
+        </div>
+
+        <!-- PAGE 34: KESIMPULAN BELAJAR -->
+        <div class="slide" id="slide-34">
+            <h2>📚 Rangkuman Logistik Misi</h2>
+            <div class="interactive-box" style="background-color: #f5f6fa; text-align: left;">
+                <p style="margin-top:0;">Kita telah berhasil memperbarui sistem logis kita dengan 3 protokol:</p>
+                <ol style="font-size:16px; line-height:2;">
+                    <li>Menyelaraskan koordinat angka puluhan lurus dengan puluhan, satuan dengan satuan.</li>
+                    <li>Meluncurkan kalkulasi dari baris belakang (Satuan) ke baris depan (Puluhan).</li>
+                    <li>Menggunakan modul transfer simpanan jika muatan hasil melampaui kapasitas 9.</li>
+                </ol>
+            </div>
+            <p>Kini sistem logikamu sudah sangat tangguh untuk mengarungi rute matematika Kelas 5!</p>
+        </div>
+
+        <!-- PAGE 35: SELESAI & SERTIFIKAT SELESAI -->
+        <div class="slide" id="slide-35">
+            <div class="cert-card">
+                <h1 style="color: var(--primary-dark); font-size: 32px; margin-bottom: 5px;">👑 MISI SUKSES 👑</h1>
+                <p style="font-size: 18px; font-weight: bold; margin-bottom: 15px;">Kadet Tempur Matematika Hebat</p>
+                <div class="illustration" style="margin: 20px 0;">
+                    <svg width="180" height="180" viewBox="0 0 100 100">
+                        <polygon points="50,5 64,36 98,36 70,57 81,91 50,70 19,91 30,57 2,36 36,36" fill="#ffca57" stroke="#ff9f43" stroke-width="2"/>
+                    </svg>
+                </div>
+                <p style="font-size: 18px; line-height: 1.6;">Telah Menyelesaikan 35 Tingkat Operasi Taktis Perkalian Bersusun</p>
+                <p>Mendapatkan Gelar Resmi:<br><strong style="font-size: 24px; color: var(--secondary);">Master Taktis Perkalian Bersusun Antariksa ✨</strong></p>
+                <button class="btn" style="margin-top: 15px;" onclick="window.location.reload();">Ulangi Simulasi</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Navigation Buttons -->
+    <div class="navigation">
+        <button class="btn btn-secondary" id="prevBtn" onclick="changeSlide(-1)" disabled>Sebelumnya</button>
+        <button class="btn" id="nextBtn" onclick="changeSlide(1)">Berikutnya</button>
+    </div>
+</div>
+
+<script>
+    let currentSlide = 1;
+    const totalSlides = 35;
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(isCorrect) {
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        osc.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        if (isCorrect) {
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(523.25, now); // C5
+            osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+            osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+            osc.start(now);
+            osc.stop(now + 0.4);
+        } else {
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            osc.frequency.exponentialRampToValueAtTime(80, now + 0.3);
+            gainNode.gain.setValueAtTime(0.2, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+            osc.start(now);
+            osc.stop(now + 0.35);
+        }
+    }
+
+    function openAlert(title, message) {
+        document.getElementById('alertTitle').innerText = title;
+        document.getElementById('alertMessage').innerText = message;
+        document.getElementById('customAlert').style.display = 'flex';
+    }
+
+    function closeAlert() {
+        document.getElementById('customAlert').style.display = 'none';
+    }
+
+    function updateUI() {
+        // Hide all slides
+        for (let i = 1; i <= totalSlides; i++) {
+            const slide = document.getElementById('slide-' + i);
+            if (slide) slide.classList.remove('active');
+        }
+        
+        // Show current slide
+        const activeSlide = document.getElementById('slide-' + currentSlide);
+        if (activeSlide) {
+            activeSlide.classList.add('active');
+        } else {
+            createDynamicSlide(currentSlide);
+        }
+
+        // Update indicators
+        document.getElementById('pageNumber').innerText = "Halaman " + currentSlide + " / " + totalSlides;
+        document.getElementById('progressBar').style.width = (currentSlide / totalSlides * 100) + "%";
+
+        // Enable/disable buttons
+        document.getElementById('prevBtn').disabled = (currentSlide === 1);
+        if (currentSlide === totalSlides) {
+            document.getElementById('nextBtn').innerText = "Selesai 🎉";
+            document.getElementById('nextBtn').disabled = true;
+        } else {
+            document.getElementById('nextBtn').innerText = "Berikutnya";
+            document.getElementById('nextBtn').disabled = false;
+        }
+    }
+
+    function changeSlide(direction) {
+        currentSlide += direction;
+        if (currentSlide < 1) currentSlide = 1;
+        if (currentSlide > totalSlides) currentSlide = totalSlides;
+        updateUI();
+    }
+
+    function checkAns(id, correctVal, feedbackId) {
+        const userAns = document.getElementById(id).value;
+        const fb = document.getElementById(feedbackId);
+        if (parseInt(userAns) === correctVal) {
+            fb.innerHTML = "✨ Hebat! Kalkulasi BENAR! 🎉";
+            fb.className = "feedback correct";
+            playSound(true);
+        } else {
+            fb.innerHTML = "❌ Hmm, koordinat tidak tepat. Coba periksa kembali.";
+            fb.className = "feedback wrong";
+            playSound(false);
+        }
+    }
+
+    function createDynamicSlide(num) {
+        let wrapper = document.getElementById('slides-wrapper');
+        let existing = document.getElementById('slide-' + num);
+        if (!existing) {
+            let newSlide = document.createElement('div');
+            newSlide.id = 'slide-' + num;
+            newSlide.className = 'slide active';
+            
+            let val1 = 10 + (num % 5) * 4;
+            let val2 = 2 + (num % 4);
+            let correct = val1 * val2;
+
+            newSlide.innerHTML = `
+                <h2>✏️ Tantangan Simulasi Taktis: Halaman ${num}</h2>
+                <p>Luncurkan kalkulasi terbaikmu untuk memperkuat jaringan navigasi!</p>
+                <div class="math-grid">
+                    ${val1}<br>
+                    ${val2}<br>
+                    <div class="math-line"><span class="math-sign">×</span></div>
+                </div>
+                <div class="interactive-box">
+                    Berapakah hasil dari <strong>${val1} × ${val2}</strong>? <br><br>
+                    <input type="number" id="q${num}" class="input-answer" style="width:120px;">
+                    <button class="btn" onclick="checkAns('q${num}', ${correct}, 'ans${num}')">Kirim Hasil</button>
+                    <div id="ans${num}" class="feedback"></div>
+                </div>
+            `;
+            wrapper.appendChild(newSlide);
+        } else {
+            existing.classList.add('active');
+        }
+    }
+</script>
+</body>
+</html>
